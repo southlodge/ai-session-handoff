@@ -1,0 +1,97 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "new",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" session-start --source startup --host grok",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "load",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" session-start --source resume --host grok",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" prompt --host grok",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" pretool --host grok",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" posttool --host grok",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" posttool --host grok",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" compacted --host grok",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" stop --host grok",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" complete-check --host grok",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

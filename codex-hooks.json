@@ -1,0 +1,60 @@
+{
+  "description": "Chat handoff notes (handoff-guard.mjs). install-codex.mjs merges these entries into ~/.codex/hooks.json and replaces __HANDOFF_GUARD__ with the script's absolute path.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" session-start --host codex",
+            "timeout": 15,
+            "statusMessage": "Handoff: reading handoff notes"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" prompt --host codex",
+            "timeout": 10,
+            "statusMessage": "Handoff: checking this chat is still active"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" pretool --host codex",
+            "timeout": 10,
+            "statusMessage": "Handoff: checking this chat may act"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" stop --host codex",
+            "timeout": 15,
+            "statusMessage": "Handoff: saving this chat's note"
+          },
+          {
+            "type": "command",
+            "command": "node \"__HANDOFF_GUARD__\" complete-check --host codex",
+            "timeout": 30,
+            "statusMessage": "Handoff: checking a 100% claim against git"
+          }
+        ]
+      }
+    ]
+  }
+}

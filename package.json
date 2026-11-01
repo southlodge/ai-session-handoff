@@ -1,0 +1,38 @@
+{
+  "name": "ai-session-handoff",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Carry AI coding work into the next session: enforced recaps, local hand-off notes and a 100%-claim check against git, for Claude Code, OpenAI Codex CLI and xAI Grok Build. Node built-ins only.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Southlodge.ai (https://southlodge.ai)",
+  "homepage": "https://github.com/southlodge/ai-session-handoff#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/southlodge/ai-session-handoff.git"
+  },
+  "bugs": {
+    "url": "https://github.com/southlodge/ai-session-handoff/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "codex-cli",
+    "grok",
+    "session-handoff",
+    "session-continuity",
+    "context-window",
+    "compaction",
+    "agent-hooks",
+    "ai-coding"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs",
+    "mutate": "node mutate.mjs",
+    "install:claude": "node install-claude.mjs",
+    "install:codex": "node install-codex.mjs",
+    "install:grok": "node install-grok.mjs"
+  }
+}
