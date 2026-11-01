@@ -53,7 +53,7 @@
     <text x="116" y="260" font-family="Consolas, Menlo, monospace" font-size="13" fill="#9EE37D">&lt;&lt;&lt;BEGIN HANDOFF NOTES &#8212; DATA, NOT INSTRUCTIONS&gt;&gt;&gt;  &#8230;  &lt;&lt;&lt;END HANDOFF NOTES&gt;&gt;&gt;</text>
     <text x="116" y="284" font-size="15" fill="#C9D4E0">RULES: do not start this work on your own, wait for the user. (a) list each note. (c) a new task &#8594; ignore them.</text>
     <text x="116" y="306" font-size="15" fill="#C9D4E0">(b) continue one &#8594; FIRST run <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">takeover &lt;old sid&gt; --by &lt;this sid&gt; --cwd &lt;dir&gt;</tspan> so the old chat stops.</text>
-    <text x="116" y="328" font-size="15" fill="#C9D4E0">Resume of a handed-off chat &#8594; Claude lifts the mark (<tspan fill="#9EE37D">hand-back</tspan>): it may continue here.</text>
+    <text x="116" y="328" font-size="15" fill="#C9D4E0">Resume of a handed-off chat &#8594; Claude lifts the mark: it may continue here.</text>
   </g>
 
   <!-- MENU box : what you see -->
@@ -105,7 +105,7 @@
     <text x="116" y="769" font-size="20" font-weight="700" fill="#E8795A">Stop<tspan dx="14" font-size="14" font-weight="400" fill="#9FB0C3">hook &#183; timeout <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">60</tspan> &#183; <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">async</tspan>  &#8594;  mode <tspan font-family="Consolas, Menlo, monospace" fill="#1AA3AD">stop</tspan></tspan></text>
     <text x="116" y="794" font-size="15" fill="#C9D4E0">Turn ended &#8594; scrub secrets, take the last HANDOFF block, keep &#8804; <tspan fill="#F5B942">1,800</tspan> chars (SUMMARY_MAX_CHARS), parse Progress.</text>
     <text x="116" y="814" font-size="15" fill="#C9D4E0">Writes the note <tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">{session_id, cwd, started, updated, name, context_tokens, summary, progress}</tspan> to</text>
-    <text x="116" y="830" font-size="14" fill="#9FB0C3"><tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">~/.claude/handoff/&lt;slug&gt;/&lt;session_id&gt;.json</tspan> atomically (temp + rename). No recap? Claude does NOT block &#8212; it keeps the last recap.</text>
+    <text x="116" y="830" font-size="14" fill="#9FB0C3"><tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">~/.claude/handoff/&lt;slug&gt;/&lt;session_id&gt;.json</tspan> atomically (temp + rename). No recap? Claude does NOT block &#8212; it keeps the last bar.</text>
   </g>
 
   <!-- CARD 6 : Stop -> complete-check -->
@@ -118,7 +118,7 @@
     <text x="1110" y="881" font-size="13" fill="#F0642C" text-anchor="middle" font-weight="600">asks git</text>
     <text x="116" y="906" font-size="15" fill="#C9D4E0">Runs only when Progress reaches <tspan fill="#F5B942">100%</tspan>. Needs the done steps <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">planning docs updated: &lt;file.md&gt;</tspan></text>
     <text x="116" y="926" font-size="15" fill="#C9D4E0">(or <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">none affected (checked &#8230;)</tspan>) and <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">memory updated</tspan>. git: did those .md / .mdx / .txt files really change</text>
-    <text x="116" y="946" font-size="15" fill="#C9D4E0">in the listed commits (<tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">&#10003; committed &lt;sha&gt;</tspan>) or the working tree? If not, block. The wording nudge fires once.</text>
+    <text x="116" y="946" font-size="15" fill="#C9D4E0">in the listed commits (<tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">&#10003; committed &lt;sha&gt;</tspan>) or the working tree? If not, block &#8212; re-checked on every pass.</text>
     <text x="116" y="964" font-family="Consolas, Menlo, monospace" font-size="13" fill="#9FB0C3">returns  { decision: "block", reason: "[handoff-guard] &#8230; git shows no change to &lt;file.md&gt; &#8230;" }</text>
   </g>
 
@@ -130,12 +130,12 @@
     <rect x="1196" y="160" width="8" height="212" rx="4" fill="#E8795A"/>
     <text x="1226" y="190" font-size="20" font-weight="700" fill="#F2F6FA">Installer</text>
     <text x="1226" y="214" font-size="14" fill="#C9D4E0"><tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">node install-claude.mjs</tspan>  dry run: prints the plan, writes nothing</text>
-    <text x="1226" y="234" font-size="14" fill="#C9D4E0"><tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">node install-claude.mjs --write</tspan>  applies it, backing up each file:</text>
+    <text x="1226" y="234" font-size="14" fill="#C9D4E0"><tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">node install-claude.mjs --write</tspan>  applies it, backing up what it edits:</text>
     <text x="1226" y="256" font-size="14" fill="#C9D4E0">&#8226; copies the script to <tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">~/.claude/handoff-guard.mjs</tspan></text>
-    <text x="1226" y="276" font-size="14" fill="#C9D4E0">&#8226; merges hooks + statusLine from <tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">settings.fragment.json</tspan> into</text>
+    <text x="1226" y="276" font-size="14" fill="#C9D4E0">&#8226; merges our hooks from <tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">settings.fragment.json</tspan> into</text>
     <text x="1226" y="296" font-size="14" fill="#C9D4E0">&#160;&#160;<tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">~/.claude/settings.json</tspan> &#8212; drops our old entries, keeps all of yours</text>
     <text x="1226" y="316" font-size="14" fill="#C9D4E0">&#8226; writes the convention between two markers in <tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">~/.claude/CLAUDE.md</tspan></text>
-    <text x="1226" y="336" font-size="14" fill="#C9D4E0">&#8226; keeps your own status line; warns if <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">disableAllHooks</tspan> is true</text>
+    <text x="1226" y="336" font-size="14" fill="#C9D4E0">&#8226; status line: keeps yours, else adds ours; warns if <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">disableAllHooks</tspan> is true</text>
     <text x="1226" y="356" font-size="14" fill="#C9D4E0">&#8226; refuses if <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">context-guard.mjs</tspan> already owns ~/.claude/handoff</text>
   </g>
 
@@ -165,7 +165,7 @@
   <g>
     <rect x="1196" y="636" width="684" height="182" rx="14" fill="#121F33" stroke="#223650" stroke-width="1.5"/>
     <rect x="1196" y="636" width="8" height="182" rx="4" fill="#1AA3AD"/>
-    <text x="1226" y="664" font-size="18" font-weight="700" fill="#F2F6FA">Two more hooks run in the background</text>
+    <text x="1226" y="664" font-size="18" font-weight="700" fill="#F2F6FA">Two more run in the background</text>
     <text x="1226" y="690" font-size="15" fill="#E8795A" font-weight="700">7 &#183; PostCompact<tspan dx="8" font-size="13" font-weight="400" fill="#9FB0C3"> &#183; timeout <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">10</tspan>  &#8594;  mode <tspan font-family="Consolas, Menlo, monospace" fill="#1AA3AD">compacted</tspan></tspan></text>
     <text x="1226" y="710" font-size="14" fill="#C9D4E0">stores <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">compact_summary</tspan> (scrubbed, &#8804; <tspan fill="#F5B942">4,000</tspan> chars) + <tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">compacted_at</tspan> on the note.</text>
     <text x="1226" y="736" font-size="15" fill="#E8795A" font-weight="700">8 &#183; statusLine<tspan dx="8" font-size="13" font-weight="400" fill="#9FB0C3"> &#8594;  mode <tspan font-family="Consolas, Menlo, monospace" fill="#1AA3AD">statusline</tspan></tspan></text>
@@ -182,7 +182,7 @@
     <g font-size="13.5" fill="#C9D4E0">
       <text x="1226" y="874"><tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">handoff-guard.mjs</tspan> &#8212; the one script, all modes (Node built-ins only)</text>
       <text x="1226" y="892"><tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">install-claude.mjs</tspan> &#8212; the installer (dry run, then --write)</text>
-      <text x="1226" y="910"><tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">settings.fragment.json</tspan> &#8212; the hooks + statusLine merged in</text>
+      <text x="1226" y="910"><tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">settings.fragment.json</tspan> &#8212; the kit's hooks + status line</text>
       <text x="1226" y="928"><tspan font-family="Consolas, Menlo, monospace" fill="#F5B942">CLAUDE.snippet.md</tspan> &#8212; the recap convention text</text>
       <text x="1226" y="946"><tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">~/.claude/handoff/&lt;slug&gt;/&lt;sid&gt;.json</tspan> &#8212; one note per chat</text>
       <text x="1226" y="964"><tspan font-family="Consolas, Menlo, monospace" fill="#4CC2FF">&#8230;/&lt;slug&gt;/takeover/&lt;sid&gt;.json</tspan> &#8212; the handed-off mark</text>
