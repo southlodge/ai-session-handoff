@@ -104,7 +104,7 @@ const mutations = [
   ['grok: hand-off notice loses escape hatch', G, 'Carry on there, or type: continue here', 'Carry on there'],
   ['grok hooks: no UserPromptSubmit hook', 'grok-hooks.json', '"UserPromptSubmit"', '"UserPromptSubmitZ"'],
   ['grok: continue-here only under a known field', G, "Object.values(data).filter((v) => typeof v === 'string')", '[]'],
-  // gaps 88 + 89 (the founder's two-tab retest, 2026-10-30)
+  // gaps 88 + 89 (the two-tab retest, 2026-10-30)
   ['grok: wrapped step tail ends the Steps list', G, "if (items.length && t && /^\\s/.test(line)) { items[items.length - 1] += ' ' + t; continue; }", ''],
   ['grok: hand-back notice says newer chat', G, "t?.kind === 'handback' ? 'handed back to the chat that started it' : 'handed off to a newer chat'", "'handed off to a newer chat'"],
   ['grok: continue-here does not tell the model', G, "owe(cwd, data.session_id, 'resumed');\n      return;", 'return;'],

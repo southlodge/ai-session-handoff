@@ -456,7 +456,7 @@ test('resume-here (Grok): lifting a handed-off chat hands the work back to whoev
   assert.match(deny.hookSpecificOutput.permissionDecisionReason, /resume-here new-2/);
 });
 
-// ---- gaps 88 + 89: found in the founder's two-tab retest on Windows (2026-10-30 22:31-22:57) -------------------
+// ---- gaps 88 + 89: found in the two-tab retest on Windows (2026-10-30 22:31-22:57) -------------------
 test('complete-check (Grok): a step wrapped onto an indented second line does not hide the steps after it (gap 88)', () => {
   const s = sandbox();
   const msg = ['HANDOFF', 'Progress: 4/4 ▓▓▓▓▓▓▓▓▓▓ 100% — write world.txt after hello.txt', 'Steps:',
