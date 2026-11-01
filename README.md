@@ -71,7 +71,8 @@ On Claude Code and Grok Build the status line shows the context gauge and this c
 Each tool runs hooks at fixed moments: when a session starts, when you send a prompt, before a tool runs, when
 the model stops, and when a long chat is compacted. The installer points those hooks at `handoff-guard.mjs`,
 which has one mode per hook. The five diagrams below show the mechanics; each one is a plain SVG in
-[assets/diagrams/](assets/diagrams/) that you can open at full size.
+[assets/diagrams/](assets/diagrams/) that you can open at full size. The small Node scripts that draw them live in
+[assets/diagrams/src/](assets/diagrams/src/); `node assets/diagrams/src/build.mjs` regenerates all five.
 
 **1. One script, three tools.** The hook events each tool fires, the modes of the script they reach, the note
 files on disk and the one question the script asks git.
