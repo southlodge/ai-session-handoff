@@ -1,0 +1,43 @@
+name: Bug report
+description: Something the kit does wrong, or a tool update that broke a hook
+labels: [bug]
+body:
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Tool
+      options:
+        - Claude Code
+        - OpenAI Codex CLI
+        - xAI Grok Build
+    validations:
+      required: true
+  - type: input
+    id: tool-version
+    attributes:
+      label: Tool version
+      description: From the tool's own version command.
+      placeholder: "2.1.252"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Operating system and Node version
+      placeholder: "Windows 11, Node 24.12.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what the kit did, and what you expected instead. Paste the hook output or the recap block if there is one, with anything private removed.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I ran `npm test` in a fresh copy of the kit and it passed
+        - label: Nothing private is in this report

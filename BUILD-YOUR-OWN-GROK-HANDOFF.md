@@ -29,7 +29,7 @@ guide covers what is different on Grok, how to install it, and how to test it.
 > recap bar, refusal, resume), which is what found those gaps; the fixes themselves are test-proven and have not
 > yet been re-run live. Do the checks in section 6, "Before you rely on it", the first time you install it.
 >
-> **Two-tab retest (2026-10-30 22:31-22:57, Windows 11, Build 1.0.70): 7/7 PASS** — status row, 50% note, takeover from the notes menu, visible block in the old chat, `continue here` hand-back, block in the other chat. It surfaced two small gaps, fixed in this kit state: a step wrapped onto an indented second line hid the steps after it from the recap gate (gap 88), and after a hand-back the notice still said "a newer chat" (gap 89). The full retest record is in the Southlodge runbook.
+> **Two-tab retest (2026-10-30 22:31-22:57, Windows 11, Build 1.0.70): 7/7 PASS** — status row, 50% note, takeover from the notes menu, visible block in the old chat, `continue here` hand-back, block in the other chat. It surfaced two small gaps, fixed in this kit state (we number findings from our own use, and the matching tests carry the same numbers): a step wrapped onto an indented second line hid the steps after it from the recap gate (gap 88), and after a hand-back the notice still said "a newer chat" (gap 89). The full retest record is in the Southlodge runbook.
 
 ---
 

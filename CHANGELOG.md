@@ -1,0 +1,23 @@
+# Changelog
+
+All notable changes to this project are recorded here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow
+[Semantic Versioning](https://semver.org/).
+
+## [Unreleased]
+
+First public release, to be tagged `v0.1.0` when the repository goes public.
+
+### Added
+
+- `handoff-guard.mjs`: one Node script, built-ins only, that saves each reply's recap as a hand-off note,
+  shows the notes to the next session, tells a handed-off session to stop, and checks a "100% done" claim
+  against git. Serves Claude Code, OpenAI Codex CLI and xAI Grok Build.
+- An installer per tool (`install-claude.mjs`, `install-codex.mjs`, `install-grok.mjs`), dry-run by default,
+  with a backup of every file it changes.
+- A guide per tool: `BUILD-YOUR-OWN-CHAT-HANDOFF.md` (Claude Code, the full design), `BUILD-YOUR-OWN-CODEX-HANDOFF.md`
+  and `BUILD-YOUR-OWN-GROK-HANDOFF.md`.
+- 71 tests and a 96-mutation check (`npm test`, `npm run mutate`).
+- Continuous integration on Ubuntu and Windows for Node 20, 22 and 24, with the mutation run on Ubuntu.
+- `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, issue and pull-request templates, and Dependabot
+  updates for the pinned GitHub Actions.
