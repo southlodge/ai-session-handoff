@@ -9,8 +9,8 @@ Thank you. Three rules keep the kit what it is:
 3. **Every guard has a test that fails when the guard is removed.** Run both before you open a pull request:
 
    ```sh
-   npm test          # 71 tests; uses a temporary home folder, never yours
-   npm run mutate    # 96 mutations; every one must be KILLED
+   npm test          # 72 tests; uses a temporary home folder, never yours
+   npm run mutate    # 99 mutations; every one must be KILLED
    ```
 
    If you add a guard, add a line to `mutate.mjs` that breaks it, and a test that notices.

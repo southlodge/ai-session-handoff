@@ -36,8 +36,8 @@
 //   installers: a dry run until --write; each backs up every file it changes; Node 20 or later
 //       test "installer: a dry run writes nothing", test "keeps your own entries, backs up, and is idempotent",
 //       package.json:28-29
-//   71 tests (21 + 20 + 30) and 96 mutations, all killed; CI on Ubuntu and Windows, Node 20, 22 and 24
-//       node mutate.mjs --list ("96/96 mutations match"), .github/workflows/test.yml:19-20,
+//   72 tests (21 + 20 + 31) and 99 mutations, all killed; CI on Ubuntu and Windows, Node 20, 22 and 24
+//       node mutate.mjs --list ("99/99 mutations match"), .github/workflows/test.yml:19-20,
 //       .github/workflows/test.yml:27-29 (npm test everywhere, npm run mutate on Ubuntu, Node 22)
 import { C, doc, header, footer, arrow, band, card, panel, badge, text, rect, tint, mix, pill, tw, wrap, getTheme, registerBox, registerText } from './svg-kit.mjs';
 
@@ -245,7 +245,7 @@ export function render() {
     },
     {
       color: C.you, title: 'Proof you can run',
-      body: '71\u00a0tests and 96\u00a0mutations, all killed: run them before you install. CI on Ubuntu and Windows, Node\u00a020, 22 and 24.',
+      body: '72\u00a0tests and 99\u00a0mutations, all killed: run them before you install. CI on Ubuntu and Windows, Node\u00a020, 22 and 24.',
     },
     {
       color: C.git, title: 'What it never does',

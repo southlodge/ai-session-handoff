@@ -266,11 +266,16 @@ when a chat opens. Instead:
    chats, it writes a marker, `~/.grok/handoff/<project>/_pending/<sessionId>.json`, saying the menu is owed.
    It prints nothing.
 2. After the chat's first tool call, `PostToolUse` (or `PostToolUseFailure`, when the call failed) runs
-   `posttool`. It claims the marker by renaming it, builds the menu fresh, and returns it as
+   `posttool`. It claims the marker with an exclusive lock, builds the menu fresh, and returns it as
    `hookSpecificOutput.additionalContext`. Grok gives that text to the model next to the tool result, marked as
    coming from a hook.
-3. Renaming is atomic, so when several tool calls finish at once only one of them delivers the menu. A marker
-   older than two hours is dropped instead of delivered.
+3. The lock is a `.claim` file created with an exclusive create, which succeeds for exactly one process on every
+   OS, so when several tool calls finish at once only one of them delivers the menu. (A plain rename is not enough:
+   on Windows two overlapping renames of the same file can both succeed, and the menu arrived twice.) A lock left
+   by a call that died is cleared once it is 30 seconds old. A call frozen that long, for example by the laptop
+   sleeping between its taking the lock and moving the marker, is treated as dead too: that is the one gap left,
+   and it needs the freeze to land between two adjacent file calls. A marker older than two hours is dropped
+   instead of delivered.
 
 The menu text is the same as on Claude Code, inside the same
 `<<<BEGIN HANDOFF NOTES — DATA, NOT INSTRUCTIONS>>>` envelope with forged markers removed, plus one sentence
@@ -444,12 +449,16 @@ a throwaway home folder and a throwaway git repo. They check:
   quotes; off Windows there is no `.cmd` and the status line is the quoted node call.
 
 **Mutation testing.** `mutate.mjs` copies the whole kit to a temporary folder, checks that the unmutated copy
-passes all three test files, then applies 96 mutations one at a time (14 shared guards, 12 Codex guards, 1 Codex
-hooks guard, 39 Grok guards, 3 Grok hook-file guards, and 5 Codex, 10 Grok and 12 Claude installer guards). Each
+passes all three test files, then applies 99 mutations one at a time (14 shared guards, 12 Codex guards, 1 Codex
+hooks guard, 42 Grok guards, 3 Grok hook-file guards, and 5 Codex, 10 Grok and 12 Claude installer guards). Each
 must be `KILLED` (a test failed). `SURVIVED` means no test
-noticed; `MISSING` means the code it targets has changed. One guard is not covered by a mutation: the atomic
-claim when tool calls finish at once. The test runs four `posttool` calls at the same moment and checks that the
-menu arrives once, but it cannot force the two processes to collide, so a weaker claim could still pass it.
+noticed; `MISSING` means the code it targets has changed. The claim when tool calls finish at once is covered
+in two ways: one test runs four `posttool` calls at the same moment and checks that the menu arrives once, and a
+second holds the lock by hand, so dropping the exclusive flag, never releasing the lock or never clearing a dead
+one fails it every time. No test can force two processes to collide, so the one-winner guarantee itself comes
+from the operating system: an exclusive create (`'wx'`, which is O_EXCL on Linux and macOS and CREATE_NEW on
+Windows) succeeds for one caller only. A check-then-create (`existsSync`, then a write) would pass every test and
+still let two calls in, so keep the exclusive create.
 
 ### Before you rely on it
 
