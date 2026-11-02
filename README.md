@@ -72,35 +72,62 @@ Each tool runs hooks at fixed moments: when a session starts, when you send a pr
 the model stops, and when a long chat is compacted. The installer points those hooks at `handoff-guard.mjs`,
 which has one mode per hook. The five diagrams below show the mechanics; each one is a plain SVG in
 [assets/diagrams/](assets/diagrams/) that you can open at full size. The small Node scripts that draw them live in
-[assets/diagrams/src/](assets/diagrams/src/); `node assets/diagrams/src/build.mjs` regenerates all five.
+[assets/diagrams/src/](assets/diagrams/src/); `node assets/diagrams/src/build.mjs` regenerates all five, and
+`node assets/diagrams/src/build.mjs --theme dark` regenerates their dark twins (`*.dark.svg`), which GitHub shows
+instead when you view the page in a dark theme.
 
 **1. One script, three tools.** The hook events each tool fires, the modes of the script they reach, the note
 files on disk and the one question the script asks git.
 
-<p align="center"><img src="assets/diagrams/01-overview.svg" alt="Overview: Claude Code, Codex CLI and Grok Build each run handoff-guard.mjs at their hook moments; it reads and writes notes under the tool's home folder and asks git about a 100% claim" width="100%"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/diagrams/01-overview.dark.svg">
+    <img src="assets/diagrams/01-overview.svg" alt="Claude Code, OpenAI Codex CLI and xAI Grok Build all run one Node script, handoff-guard.mjs, at their hook moments: it saves each chat’s recap as a note on disk, and asks git whether a 100% claim really changed its docs." width="100%">
+  </picture>
+</p>
 
 **2. Claude Code.** Session start shows the notes, every prompt checks whether this chat was handed off, every
 tool call is refused once it has been, the Stop hook saves the recap and checks a 100% claim, PostCompact keeps
 the compaction summary, and the status line paints the gauge.
 
-<p align="center"><img src="assets/diagrams/02-claude-code.svg" alt="Claude Code: how one chat flows through the hooks" width="100%"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/diagrams/02-claude-code.dark.svg">
+    <img src="assets/diagrams/02-claude-code.svg" alt="In Claude Code, handoff-guard.mjs runs at each hook of a chat: it lists recent notes when a new chat starts, tells a handed-off chat to stop, and saves the recap as a note at each turn’s end so the next chat can take over." width="100%">
+  </picture>
+</p>
 
 **3. OpenAI Codex CLI.** The same script with `--host codex` and notes under `~/.codex`. Codex has no status
-line, so `list` prints the bars; its compact matcher re-attaches the chat's own summary; the docs check at 100%
+line, so `list` prints the bars; its compact matcher re-attaches the chat's own last recap; the docs check at 100%
 only applies when git shows files changed since the chat began.
 
-<p align="center"><img src="assets/diagrams/03-codex-cli.svg" alt="OpenAI Codex CLI: how one chat flows through the hooks" width="100%"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/diagrams/03-codex-cli.dark.svg">
+    <img src="assets/diagrams/03-codex-cli.svg" alt="In Codex CLI, handoff-guard.mjs runs with --host codex: it records a git baseline when a new chat starts, reads the chat’s size from token_count events, and saves the recap as a note at each turn’s end so the next chat can take over." width="100%">
+  </picture>
+</p>
 
 **4. xAI Grok Build.** The same script with `--host grok`. Grok cannot show text at session start, so the notes
 are owed and delivered after the first tool call; a turn that ran tools must end with a recap; the hand-off
 notice blocks the prompt until you type `continue here`.
 
-<p align="center"><img src="assets/diagrams/04-grok-build.svg" alt="xAI Grok Build: how one chat flows through the hooks" width="100%"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/diagrams/04-grok-build.dark.svg">
+    <img src="assets/diagrams/04-grok-build.svg" alt="In Grok Build, handoff-guard.mjs runs with --host grok: it delivers the start menu at the first tool result, blocks a handed-off chat’s prompts until you type continue here, and saves the recap as a note at each turn’s end so the next chat can take over." width="100%">
+  </picture>
+</p>
 
 **5. The hand-off itself.** Two chats, one piece of work: the recap becomes a note, the next chat sees it, the
 `takeover` command marks the old chat, the old chat goes quiet, and the 100% claim is checked against git.
 
-<p align="center"><img src="assets/diagrams/05-handoff-lifecycle.svg" alt="The hand-off lifecycle: chat A's recap becomes a note, chat B reads it and takes the work over, chat A is told to stop, and the 100% claim is checked against git" width="100%"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/diagrams/05-handoff-lifecycle.dark.svg">
+    <img src="assets/diagrams/05-handoff-lifecycle.svg" alt="The hand-off: Chat A’s last recap is saved as a note, Chat B reads it and takes the work over, Chat A is then told to stop, and a 100% claim is checked against git." width="100%">
+  </picture>
+</p>
 
 ## Install
 
@@ -163,9 +190,9 @@ documented hook events and JSON shapes; if a tool changes those, the tests here 
 | `handoff-guard.grok.test.mjs`   | Grok        | 30 tests: the Windows status line, the hand-off notice, the Stop recap gate and more        |
 | `mutate.mjs`                    | all three   | Breaks each guard in turn and checks that a test notices                                    |
 | `package.json`                  | all three   | `npm test` and `npm run mutate`; no dependencies                                            |
-| `.github/workflows/test.yml`    | all three   | Runs the tests on Ubuntu and Windows for Node 20, 22 and 24, and the mutation run on Ubuntu |
+| `.github/workflows/test.yml`    | all three   | Runs the tests on Ubuntu and Windows for Node 20, 22 and 24, and the mutation run on Ubuntu; rebuilds and checks the diagrams |
 | `.github/ISSUE_TEMPLATE/`       | all three   | Bug report and feature request forms; security reports go through `SECURITY.md`             |
-| `.github/PULL_REQUEST_TEMPLATE.md` | all three | The checklist a change has to pass: tests, mutation run, built-ins only, dry-run installers |
+| `.github/PULL_REQUEST_TEMPLATE.md` | all three | The checklist a change has to pass: tests, mutation run, diagram rebuild, built-ins only, dry-run installers |
 | `.github/dependabot.yml`        | all three   | Keeps the pinned GitHub Actions current (the kit itself has no dependencies to update)      |
 | `CHANGELOG.md`                  | all three   | What changed in each release                                                                |
 | `CODE_OF_CONDUCT.md`            | all three   | Contributor Covenant 2.1                                                                    |
@@ -173,7 +200,7 @@ documented hook events and JSON shapes; if a tool changes those, the tests here 
 | `SECURITY.md`                   | all three   | How to report a vulnerability, and what the kit does and does not touch                     |
 | `LICENSE`                       | all three   | The Apache License 2.0 text, unchanged from apache.org                                      |
 | `NOTICE`                        | all three   | Copyright notice to keep with any copy or fork                                              |
-| `assets/`                       | all three   | The Southlodge logo (light + dark) and the five system diagrams; not installed anywhere      |
+| `assets/`                       | all three   | The Southlodge logo (light + dark) and the five system diagrams (light + dark) with the scripts that draw and check them; not installed anywhere |
 
 ## Status
 

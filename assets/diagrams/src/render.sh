@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# render.sh <svg-dir> <png-dir> [name-prefix] — screenshots each SVG at 1920x1080 with headless Edge.
+# render.sh <svg-dir> <png-dir> [name-prefix]: screenshots each SVG at 1920x1080 with headless Edge.
 set -u
 SVGDIR="$1"; PNGDIR="$2"; PREFIX="${3:-}"
 mkdir -p "$PNGDIR"

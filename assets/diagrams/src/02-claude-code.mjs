@@ -1,97 +1,123 @@
 // 02: Claude Code: how one chat flows through the hooks. Swim lanes: You · Claude Code · handoff-guard.mjs · Notes on disk · git.
+//
+// Every behavioural sentence below is checkable in this kit (checked 2026-11-02; check-cites.mjs prints each cited
+// line beside its claim). A bare :N is a line of handoff-guard.mjs. claim → source:
+//   session-start lists this folder's notes newer than 72 h, one menu line each: bar, title, age
+//       handoff-guard.mjs:473 (sessionStart), :442 (menu), :458 (menu line), :234 (listNotes), :48 (NOTE_MAX_AGE_MS)
+//   a burst of starts gets no menu                     :498, test "session-start skips the menu for a burst of starts"
+//   prompt reads this chat's takeover mark; handed off: say the work moved on, and stop   :531 (prompt), :534, :554-559
+//   prompt: past 200k tokens, a nudge to start a new chat                                 :53 (NUDGE_TOKENS), :565-567
+//   pretool: handed off: deny all but resume-here and the stop-work tools, naming the new chat
+//       :579 (pretool), :578 (STOP_TOOLS), :584-586, :597 (the reason names session t.by); no mark: allow at once :582
+//   each reply that does work ends with a HANDOFF recap   CLAUDE.snippet.md:3-4; :131 (recapOf reads the last HANDOFF block)
+//   stop saves the recap as <session>.json: summary (the recap) and progress (the bar)    :302 (stop), :314-325, :64
+//   complete-check: at 100% the Steps need a docs step and a memory step; named docs must have changed (git)
+//       :393 (completeCheck), :405-414, :415 (once), test "complete-check blocks a 100% recap that has no docs or memory step, but only once"
+//   compacted keeps the summary on the note; the bar stays   :603 (compacted), :613, test "compacted keeps the compaction summary on the note"
+//   statusline paints the context gauge and the chat's bar with its next step, and HANDED OFF if marked
+//       :618 (statusline), :628, :630, :631, :191 (gauge)
+//   install: a dry run; --write copies the script, merges settings.json, adds the CLAUDE.md rule, backs up each file
+//       install-claude.mjs:3-5
+//   the model runs takeover, resume-here and notes; list prints the bars for you   :636, :645, :653-655, :660-661, :676
+//   notes are plain JSON in ~/.claude/handoff/, kept 72 h, this machine only       :48, :243, :64 (notePath)
+//   the hooks read only this folder’s notes: one directory per folder   :45 (ROOT), :63 (projectDir), :234-235 (listNotes)
+//   no network, no telemetry, no dependencies; every mode exits 0
+//       :27-30 (node built-ins only), :680-681, test "every hook mode exits 0 on empty or malformed input"
 import { C, doc, header, footer, arrow, band } from './svg-kit.mjs';
 import { sequence } from './sequence.mjs';
 
 export function render() {
   const TOOL = C.claude;
-  let s = header('Claude Code: one chat, hook by hook', 'What the hooks do at each moment of a session, from start to the next chat taking over');
+  let s = header('Claude Code: one chat, hook by hook', 'What the hooks do at each moment of a chat, from session start to the next chat taking over');
 
   const q = sequence({
     lanes: [
-      { key: 'you', label: 'You', sub: 'in the terminal', color: C.you, h: 104 },
-      { key: 'tool', label: 'Claude Code', sub: 'fires its hooks', color: TOOL, h: 110 },
-      { key: 'guard', label: 'handoff-guard.mjs', sub: 'one script, one mode per hook', color: C.script, h: 232 },
-      { key: 'disk', label: 'Notes on disk', sub: '~/.claude/handoff/', subMono: true, color: C.disk, h: 110 },
-      { key: 'git', label: 'git', sub: 'the one question it asks', color: C.git, h: 104 },
+      { key: 'you', label: 'You', sub: 'in the terminal', color: C.you, h: 126 },
+      { key: 'tool', label: 'Claude Code', sub: 'fires its hooks', color: TOOL, h: 126 },
+      { key: 'guard', label: 'handoff-guard.mjs', sub: 'the default host', color: C.script, h: 190 },
+      { key: 'disk', label: 'Notes on disk', sub: '~/.claude/handoff/', subMono: true, color: C.disk, h: 112 },
+      { key: 'git', label: 'git', sub: 'the one question it asks', color: C.git, h: 91 },
     ],
     columns: [
       { title: 'Session start', sub: 'SessionStart', subMono: true },
       { title: 'You send a prompt', sub: 'UserPromptSubmit', subMono: true },
       { title: 'Claude calls a tool', sub: 'PreToolUse', subMono: true },
-      { title: 'Claude replies', sub: 'the reply ends with HANDOFF' },
-      { title: 'Turn ends', sub: 'Stop, two hooks' },
-      { title: 'Long chat', sub: 'PostCompact · status line' },
+      { title: 'Claude replies', sub: 'the reply ends with `HANDOFF`' },
+      { title: 'Turn ends', sub: '`Stop`, two hooks' },
+      { title: 'Long chat', sub: '`PostCompact` · status line' },
     ],
   });
 
-  const body = { size: 13.5, shadow: true, align: 'top', offset: 8 };
-  const rw = { color: C.disk, labelSize: 11.5 };
+  const body = { shadow: true, align: 'top', offset: 8 };       // body defaults to 15 px, titles to 17 px
+  const prim = (color) => ({ weight: 'primary', color });        // primary: 2.5 px solid, coloured by its source lane
+  const ch = { ...body, channel: true };                         // leaves a 30 px channel for the return arrow
+  // secondary: a dashed return in the script colour, out of the card's left edge, up the column's channel and
+  // into the target's left edge
+  const back = (src, dest, col) => {
+    const cx = q.channelX(col);
+    q.raw(arrow([[src.x - 2, src.y + 28], [cx, src.y + 28], [cx, dest.cy], [dest.x - 2, dest.cy]], { weight: 'secondary', color: C.script }));
+  };
 
   // ① Session start
-  const y1 = q.cell(0, 'you', { ...body, accent: C.you, title: 'Open a chat', body: ['`claude` in the project folder, or resume one.'] });
-  const t1 = q.cell(0, 'tool', { ...body, accent: TOOL, title: 'SessionStart', body: ['Runs the hook before you type.'] });
-  const s1 = q.cell(0, 'guard', { ...body, accent: C.script, title: 'session-start', body: ['Reads this folder’s recent notes and prints a **menu** inside a data envelope: bar, title, age and next step of each chat.', 'Once per burst of starts.'] });
-  const d1 = q.cell(0, 'disk', { ...body, accent: C.disk, title: 'reads *.json', body: ['Notes newer than 72 h, this folder only.'] });
-  q.down(y1, t1).down(t1, s1).down(s1, d1, { ...rw, label: 'read' });
-  q.note(0, 'git', 'not asked');
+  const y1 = q.cell(0, 'you', { ...body, accent: C.you, title: 'Open a chat', body: ['Start or resume a chat with `claude`.'] });
+  const t1 = q.cell(0, 'tool', { ...body, accent: TOOL, title: 'SessionStart', body: ['Runs before you type.'] });
+  const s1 = q.cell(0, 'guard', { ...body, accent: C.script, title: 'session-start', body: ['Reads this folder’s recent notes and lists each chat as a **menu** line: bar, title, age.'] });
+  const d1 = q.cell(0, 'disk', { ...body, accent: C.disk, title: 'reads *.json', body: ['Notes newer than 72\u00a0hours, this folder.'] });
+  q.down(y1, t1, prim(C.you)).down(t1, s1, prim(TOOL)).down(s1, d1, { ...prim(C.script), label: 'read', labelColor: C.disk });
 
   // ② Prompt
-  const y2 = q.cell(1, 'you', { ...body, accent: C.you, title: 'Type a prompt', body: ['“carry on with the login rate limit”'] });
-  const t2 = q.cell(1, 'tool', { ...body, accent: TOOL, title: 'UserPromptSubmit', body: ['Passes the prompt and the transcript path.'] });
-  const s2 = q.cell(1, 'guard', { ...body, accent: C.script, title: 'prompt', body: ['**Handed off?** Then it says which chat took over and tells Claude to stop.', 'Past ~200k tokens it nudges: hand off soon.', 'Otherwise silent.'] });
-  const d2 = q.cell(1, 'disk', { ...body, accent: C.disk, title: 'reads the mark', body: ['The `handed-off` flag on this chat’s note.'] });
-  q.down(y2, t2).down(t2, s2).down(s2, d2, { ...rw, label: 'read' });
-  q.note(1, 'git', 'not asked');
+  const y2 = q.cell(1, 'you', { ...body, accent: C.you, title: 'Type a prompt', body: ['“carry on with the login fix”'] });
+  const t2 = q.cell(1, 'tool', { ...body, accent: TOOL, title: 'UserPromptSubmit', body: ['Passes the prompt and transcript path.'] });
+  const s2 = q.cell(1, 'guard', { ...body, accent: C.script, title: 'prompt', body: ['Handed off? Say the work moved on, and stop.', 'Past 200k\u00a0tokens: a nudge to start a new chat.'] });
+  const d2 = q.cell(1, 'disk', { ...body, accent: C.disk, title: 'reads the mark', body: ['This chat’s takeover mark.'] });
+  q.down(y2, t2, prim(C.you)).down(t2, s2, prim(TOOL)).down(s2, d2, prim(C.script));
 
   // ③ Tool call
-  const y3 = q.cell(2, 'you', { ...body, accent: C.you, title: 'Watch it work', body: ['Nothing to do unless a tool is refused.'] });
-  const t3 = q.cell(2, 'tool', { ...body, accent: TOOL, title: 'PreToolUse', body: ['Every Bash, Edit, Write or Read call.'] });
-  const s3 = q.cell(2, 'guard', { ...body, accent: C.script, title: 'pretool', body: ['Handed off → **deny**, with a reason naming the new chat and the `resume-here` command.', 'Otherwise allow, at once.', 'A refused tool is how a stale chat learns to stop.'] });
-  const d3 = q.cell(2, 'disk', { ...body, accent: C.disk, title: 'reads the mark', body: ['Same flag, checked on every call.'] });
-  q.down(y3, t3).down(t3, s3).down(s3, d3, { ...rw, label: 'read' });
-  q.note(2, 'git', 'not asked');
+  const y3 = q.cell(2, 'you', { ...body, accent: C.you, title: 'Watch it work', body: ['Idle unless a tool is denied.'] });
+  const t3 = q.cell(2, 'tool', { ...body, accent: TOOL, title: 'PreToolUse', body: ['Before every tool call.'] });
+  const s3 = q.cell(2, 'guard', { ...body, accent: C.script, title: 'pretool', body: ['Handed off? **Deny** all but `resume-here` and stop-work tools, naming the new chat.', 'Else allow at once.'] });
+  const d3 = q.cell(2, 'disk', { ...body, accent: C.disk, title: 'reads the mark', body: ['Checked on every call.'] });
+  q.down(y3, t3, prim(C.you)).down(t3, s3, prim(TOOL)).down(s3, d3, prim(C.script));
 
   // ④ Reply with recap
-  const y4 = q.cell(3, 'you', { ...body, accent: C.you, title: 'Read the recap', body: ['Task · Done · Next · Files · progress bar.'] });
-  const t4 = q.cell(3, 'tool', { ...body, accent: TOOL, title: 'Claude writes', body: ['Every reply ends with a `HANDOFF` block: the convention in CLAUDE.md.'] });
-  q.cell(3, 'guard', { ...body, accent: C.faint, titleColor: C.faint, title: 'not involved yet', body: [{ t: 'The recap is plain text in the reply. The script reads it at the Stop hook, one column to the right.', fill: C.muted }] });
-  q.up(t4, y4, { color: TOOL });
-  q.note(3, 'disk', 'nothing written yet');
-  q.note(3, 'git', 'not asked');
+  const y4 = q.cell(3, 'you', { ...body, accent: C.you, title: 'Read the recap', body: ['Task, Done, Next, Files and the bar.'] });
+  const t4 = q.cell(3, 'tool', { ...body, accent: TOOL, title: 'Claude writes', body: ['Each reply that does work ends with a `HANDOFF` recap.'] });
+  q.cell(3, 'guard', { ...body, accent: C.faint, titleColor: C.muted, title: 'not involved yet', body: [{ t: 'The recap is plain text, read at `Stop`.', fill: C.muted, code: C.muted }] });
+  q.up(t4, y4, prim(TOOL));
+  q.note(3, 'disk', 'nothing to write yet', { fill: C.muted }); // muted clears 4.5:1 where faint does not (light theme)
 
   // ⑤ Stop (with a left channel for the return arrow)
-  const ch = { ...body, channel: true };
-  const y5 = q.cell(4, 'you', { ...ch, accent: C.you, title: 'See the status line', body: ['Bar and next step, or **HANDED OFF**.'] });
-  const t5 = q.cell(4, 'tool', { ...ch, accent: TOOL, title: 'Stop, twice', body: ['Fires `stop`, then `complete-check`.'] });
-  const s5 = q.cell(4, 'guard', { ...ch, accent: C.script, title: 'stop → complete-check', body: ['**stop**: saves the last `HANDOFF` block as the note; the bar comes from its Steps list. No recap? The old note stays.', '**complete-check**: a 100% claim must name docs that git shows changed, or it blocks, once.'] });
-  const d5 = q.cell(4, 'disk', { ...ch, accent: C.disk, title: 'writes the note', body: ['`<session>.json`: recap, bar, next step, files, time.'] });
-  const g5 = q.cell(4, 'git', { ...ch, accent: C.git, title: 'git status', body: ['Did the named docs change?'] });
-  q.down(t5, s5).down(s5, d5, { ...rw, label: 'write' }).down(d5, g5, { color: C.git });
-  const cx5 = q.channelX(4);
-  q.raw(arrow([[cx5, s5.y + 20], [cx5, y5.bottom + 4]], { color: C.ok, dashed: true }));
+  const y5 = q.cell(4, 'you', { ...ch, accent: C.you, title: 'See the status line', body: ['Bar, next step, and **HANDED OFF** if set.'] });
+  const t5 = q.cell(4, 'tool', { ...ch, accent: TOOL, title: 'Stop, two hooks', body: ['Fires `stop`, then `complete-check`.'] });
+  const s5 = q.cell(4, 'guard', { ...ch, accent: C.script, title: 'Save, check', body: ['`stop` saves the recap as the note.', '`complete-check`: 100% needs docs and memory steps.'] });
+  const d5 = q.cell(4, 'disk', { ...ch, rail: true, accent: C.disk, title: 'writes the note', body: ['`<session>.json`: recap and progress.'] });
+  const g5 = q.cell(4, 'git', { ...ch, accent: C.git, title: 'git status', body: ['Named docs changed?'] });
+  q.down(t5, s5, prim(TOOL)).down(s5, d5, { ...prim(C.script), label: 'write', labelColor: C.disk }).down(s5, g5, { weight: 'secondary', color: C.git, x: q.railX(4) });
+  back(s5, y5, 4);
 
   // ⑥ Long chat
-  const y6 = q.cell(5, 'you', { ...ch, accent: C.you, title: 'Keep going, or hand off', body: ['A fresh chat picks the note up from its menu.'] });
+  const y6 = q.cell(5, 'you', { ...ch, accent: C.you, title: 'Carry on or hand off', body: ['A fresh chat picks the note up.'] });
   const t6 = q.cell(5, 'tool', { ...ch, accent: TOOL, title: 'PostCompact', body: ['After the context is summarised.'] });
-  const s6 = q.cell(5, 'guard', { ...ch, accent: C.script, title: 'compacted · statusline', body: ['**compacted**: keeps the compaction summary on the note, so nothing is lost.', '**statusline**: paints the context gauge and this chat’s bar from the same note.'] });
+  const s6 = q.cell(5, 'guard', { ...ch, accent: C.script, title: 'Keep, show', body: ['`compacted` keeps the summary on the note.', '`statusline` paints the gauge and bar.'] });
   const d6 = q.cell(5, 'disk', { ...ch, accent: C.disk, title: 'updates the note', body: ['Adds the summary; the bar stays.'] });
-  q.down(t6, s6).down(s6, d6, { ...rw, label: 'write' });
-  const cx6 = q.channelX(5);
-  q.raw(arrow([[cx6, s6.y + 20], [cx6, y6.bottom + 4]], { color: C.ok, dashed: true }));
-  q.note(5, 'git', 'not asked');
+  q.down(t6, s6, prim(TOOL)).down(s6, d6, prim(C.script));
+  back(s6, y6, 5);
+
+  // one lane-level note on git (asked once) in place of five repeated notes
+  q.laneNote('git', 'asked only at step 5', { fill: C.muted });
 
   s += q.svg();
 
   // bottom band: install, commands, boundaries
   s += band(q.bottom + 14, 'INSTALL, COMMANDS AND WHAT IT NEVER DOES', [
-    { color: C.script, titleMono: true, title: 'node install-claude.mjs, then --write', body: 'Dry run first. Copies the script to ~/.claude/, merges the hook and status line entries into settings.json, adds the recap convention to CLAUDE.md, and backs up every file it changes.' },
-    { color: C.disk, titleMono: true, title: 'takeover · resume-here · list · notes', body: 'Commands you run yourself: mark a chat handed off, lift the mark, print the bars, show the menu. Notes are plain JSON under ~/.claude/handoff/, kept 72 hours, this machine only.' },
-    { color: C.git, title: 'What it never does', body: 'No network, no telemetry, no dependencies. It never edits your code or reads other folders’ notes, and every mode exits 0, so a broken hook can never block Claude Code itself.' },
+    { color: C.script, titleMono: true, title: 'node install-claude.mjs, then --write', body: 'A dry run previews every change. `--write` copies the script into `~/.claude/`, merges the hook and status-line entries into `settings.json`, adds the recap convention to `CLAUDE.md`, and backs up each file it changes.' },
+    { color: C.disk, titleMono: true, title: 'takeover · resume-here · list · notes', body: 'The model runs `takeover`, `resume-here` and `notes`; `list` prints the bars for you. Notes are plain JSON in `~/.claude/handoff/`, kept 72\u00a0hours, this machine only.' },
+    { color: C.git, title: 'What it never does', body: 'No network, no telemetry, no dependencies. It never edits your code, its hooks read only this folder’s notes, and every mode exits 0, so a broken hook can never block Claude Code itself.' },
   ]).svg;
 
   s += footer(2, [
     { color: C.you, label: 'You' }, { color: TOOL, label: 'Claude Code' }, { color: C.script, label: 'handoff-guard.mjs' },
-    { color: C.disk, label: 'Notes on disk' }, { color: C.git, label: 'git' }, { color: C.ok, label: 'back to you' },
+    { color: C.disk, label: 'Notes on disk' }, { color: C.git, label: 'git' }, { color: C.script, label: 'back to you', line: true },
   ]);
-  return doc(s, { label: 'Claude Code: how one chat flows through the hand-off hooks, from session start to the next chat taking over' });
+  return doc(s, { label: 'In Claude Code, handoff-guard.mjs runs at each hook of a chat: it lists recent notes when a new chat starts, tells a handed-off chat to stop, and saves the recap as a note at each turn’s end so the next chat can take over.' });
 }

@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>m</title><pre id="out"></pre>
+<script>
+const chars = [];
+for (let c = 32; c <= 126; c++) chars.push(String.fromCharCode(c));
+for (const c of '\u00b7\u2019\u2018\u201c\u201d\u2026\u2192\u2190\u2191\u2193\u2013\u2014\u00d7\u2264\u2265\u2713\u2022\u2060\u00a0') chars.push(c);
+const cv = document.createElement('canvas');
+const ctx = cv.getContext('2d');
+const faces = {
+  segoe: '"Segoe UI"', arial: 'Arial', stack: '"Segoe UI", Inter, -apple-system, "Helvetica Neue", Arial, sans-serif',
+  consolas: 'Consolas', monostack: 'Consolas, "SF Mono", Menlo, "Liberation Mono", monospace',
+};
+const out = { chars: chars.join(''), w: {} };
+for (const [k, f] of Object.entries(faces)) {
+  for (const wt of [400, 600, 700]) {
+    ctx.font = `${wt} 1000px ${f}`;
+    out.w[`${k}${wt}`] = chars.map((c) => Math.round(ctx.measureText(c).width));
+  }
+}
+// a sanity sample: whole-string widths vs the per-glyph sum (kerning is off in SVG text by default? measured here both ways)
+ctx.font = '700 1000px "Segoe UI"';
+out.sample = { s: 'stop \u2192 complete-check', whole: Math.round(ctx.measureText('stop \u2192 complete-check').width) };
+document.getElementById('out').textContent = JSON.stringify(out);
+</script>
