@@ -348,8 +348,8 @@ throwaway home folder and a throwaway git repo. They check:
 
 **Mutation testing.** `mutate.mjs` copies the whole kit to a temporary folder and first checks that the
 unmutated copy passes all three test files; if it does not, it stops, because a "kill" against a copy that
-already fails proves nothing. It then applies 96 mutations one at a time (the 14 shared guards, 12 Codex guards,
-1 Codex hooks guard, 5 Codex installer guards, 12 Claude installer guards, and the 52 Grok guards described in
+already fails proves nothing. It then applies 99 mutations one at a time (the 14 shared guards, 12 Codex guards,
+1 Codex hooks guard, 5 Codex installer guards, 12 Claude installer guards, and the 55 Grok guards described in
 the Grok guide) and reports `KILLED` (a test failed, good), `SURVIVED` (no test noticed, bad) or `MISSING` (the
 code it targets has changed; update the mutation). When you add a guard, add a mutation for it.
 

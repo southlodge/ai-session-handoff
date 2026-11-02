@@ -622,9 +622,9 @@ The kit's tests show the approach:
 
 Then **prove the tests can fail.** A check that can never fire looks exactly like a check that works. For each
 guard, delete it or flip it, run the tests, and confirm at least one fails. This is called mutation testing. The
-kit was checked this way. The 10 mutations below cover the Claude Code guards; `mutate.mjs` runs 96 in all
+kit was checked this way. The 10 mutations below cover the Claude Code guards; `mutate.mjs` runs 99 in all
 (these 10, one for the transcript token reader, three for file names with non-ASCII letters, 12 for the Claude
-installer, 12 for the Codex host, 1 for the Codex hooks, 5 for the Codex installer and 52 for Grok). The 71 before the 2026-10-30 Grok round were killed
+installer, 12 for the Codex host, 1 for the Codex hooks, 5 for the Codex installer and 55 for Grok). The 71 before the 2026-10-30 Grok round were killed
 on Windows 11 and on Ubuntu 26.04 (Node 22); the 14 added that round were each proven killed on a throwaway
 copy; the full 85-mutant release run on 2026-10-30 killed 85/85 on Ubuntu 26.04 (Node 22) and, on Windows 11
 (Node 24), 84 in the full run plus the repaired 85th proven killed on a throwaway copy of the same kit state. The round for gaps 88 and 89 (our finding numbers; the matching tests carry them) (2026-10-30 evening) added 2 tests (66) and 2 mutations (87); those two and the one repaired hand-back mutation were each proven killed on a throwaway copy, every from-string was checked to match exactly once, and the full 87-mutant release run on 2026-10-31 killed 87/87 on both Windows 11 (Node 24, 39 min) and Ubuntu 26.04 (Node 22, 56 min), exit 0, after the run itself found a parse error in the shipped list, fixed as gap 90 (`--list` self-check + a 67th test).

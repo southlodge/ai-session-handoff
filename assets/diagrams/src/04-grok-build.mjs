@@ -102,7 +102,7 @@ export function render() {
   q.note(3, 'you', 'the menu is for Grok', { fill: C.muted }); // muted clears 4.5:1 where faint does not (light theme)
   const t4 = q.cell(3, 'tool', { ...ch, ...differs, accent: TOOL, title: 'Tool result', body: ['`PostToolUse` or `PostToolUseFailure`.'] });
   const s4 = q.cell(3, 'guard', { ...ch, ...differs, accent: C.script, title: 'posttool', body: ['Delivers the owed **menu** once, as data.', 'A failed first call counts too; dropped after 2\u00a0hours.'] });
-  const d4 = q.cell(3, 'disk', { ...ch, ...differs, accent: C.disk, title: 'the marker', body: ['`_pending/`, claimed by rename.'] });
+  const d4 = q.cell(3, 'disk', { ...ch, ...differs, accent: C.disk, title: 'the marker', body: ['`_pending/`, claimed by an exclusive lock.'] });
   q.down(t4, s4, prim(TOOL)).down(s4, d4, { ...prim(C.script), label: 'read', labelColor: C.disk });
   back(s4, t4, 3);
 

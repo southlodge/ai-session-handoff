@@ -52,7 +52,7 @@ const SUMMARY_MAX_CHARS = 1800;
 const OTHER_NOTE_CHARS = 250;
 const NUDGE_TOKENS = 200_000;
 const TAIL_BYTES = 512 * 1024;
-const PENDING_MAX_AGE_MS = 2 * 3600 * 1000;
+const PENDING_MAX_AGE_MS = 2 * 3600 * 1000, CLAIM_STALE_MS = 30_000; // a claim lock this old was left by a call that died
 const GROK_TEXT_MAX = 10_000; // Grok clips hook text for the model at this many characters
 
 // ---- small helpers -------------------------------------------------------------------------------------------
@@ -261,15 +261,15 @@ function burstStart(cwd) {
   return recent.some((t) => now - t < 5_000);
 }
 // Grok ignores what SessionStart and PostCompact hooks print, so those modes leave a marker saying what is owed, and
-// the posttool mode hands it over with the chat's next tool result. Renaming the marker claims it: when tool calls
-// run in parallel, only one of them delivers it.
+// the posttool mode hands it over with the chat's next tool result. When tool calls run in parallel, only the one that
+// creates the `.claim` lock delivers it: an exclusive create succeeds once on every OS, a rename does not on Windows.
 const owe = (cwd, sid, kind) => { if (sid) writeJson(pendingPath(cwd, sid), { kind, at: new Date().toISOString() }); };
 function claimOwed(cwd, sid) {
-  const p = pendingPath(cwd, sid);
-  const mine = `${p}.${process.pid}.claimed`;
-  try { fs.renameSync(p, mine); } catch { return null; } // nothing owed, or another tool call took it
-  const owed = parseJson(safeRead(mine));
-  try { fs.unlinkSync(mine); } catch { /* ignore */ }
+  const p = pendingPath(cwd, sid), lock = `${p}.claim`, mine = `${p}.${process.pid}.claimed`;
+  try { fs.closeSync(fs.openSync(lock, 'wx')); } catch { try { if (Date.now() - fs.statSync(lock).mtimeMs > CLAIM_STALE_MS) fs.unlinkSync(lock); } catch { /* gone */ } return null; } // another call holds it
+  let owed = null;
+  try { fs.renameSync(p, mine); owed = parseJson(safeRead(mine)); fs.unlinkSync(mine); } catch { /* nothing owed */ }
+  try { fs.unlinkSync(lock); } catch { /* released */ }
   return owed && ageMs(owed.at) <= PENDING_MAX_AGE_MS ? owed : null;
 }
 // A reply "does work" when it carries its own HANDOFF recap block. Grok's Stop gate (recap enforcement) blocks a

@@ -136,6 +136,23 @@ test('tool calls running at once deliver the menu exactly once', async () => {
   assert.equal(outs.filter((o) => o.includes('Login rate limit')).length, 1, outs.map((o) => o.length).join(','));
 });
 
+test('a held claim lock blocks delivery, and a lock left by a dead call clears after 30 s', () => {
+  const s = sandbox();
+  s.run('stop', stopEvent(s, 'old-1', recap(['✓ a', '→ b'])));
+  s.run('session-start', s.ev('SessionStart', { sessionId: 'new-2' }), ['--source', 'startup']);
+  const owed = path.join(fs.readdirSync(s.store).map((d) => path.join(s.store, d, '_pending', 'new-2.json')).find((p) => fs.existsSync(p)));
+  const lock = `${owed}.claim`;
+  fs.writeFileSync(lock, ''); // another tool call is mid-claim
+  assert.equal(s.run('posttool', toolEvent(s, 'new-2')), '', 'a call that finds a fresh lock delivers nothing');
+  assert.ok(fs.existsSync(owed) && fs.existsSync(lock), 'the marker and the fresh lock stay');
+  const old = new Date(Date.now() - 60_000);
+  fs.utimesSync(lock, old, old); // the call that made it died
+  assert.equal(s.run('posttool', toolEvent(s, 'new-2')), '', 'the call that clears a dead lock delivers nothing');
+  assert.ok(!fs.existsSync(lock) && fs.existsSync(owed), 'the dead lock is cleared; the menu is still owed');
+  assert.match(s.run('posttool', toolEvent(s, 'new-2')), /Login rate limit/);
+  assert.ok(!fs.existsSync(owed) && !fs.existsSync(lock), 'the delivery removes the marker and releases the lock');
+});
+
 test('the notes command shows the menu on request; the posttool then adds only the session id', () => {
   const s = sandbox();
   assert.match(s.run('notes', undefined, ['--cwd', s.project]), /no notes from other chats/);

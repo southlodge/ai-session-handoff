@@ -53,7 +53,7 @@ const mutations = [
   ['grok: subagent Stop counted', G, "data.reason === 'end_turn') && !data.subagentType)", "data.reason === 'end_turn'))"],
   ['grok: Claude hooks run under Grok', G, 'if (!GROK && process.env.GROK_HOOK_EVENT) process.exit(0);', ''],
   ['grok: menu printed at start', G, "if (GROK) { owe(cwd, data.session_id, 'menu'); return; }", ''],
-  ['grok: menu delivered again', G, 'try { fs.unlinkSync(mine); } catch { /* ignore */ }', 'try { fs.renameSync(mine, p); } catch { /* ignore */ }'],
+  ['grok: menu delivered again', G, 'owed = parseJson(safeRead(mine)); fs.unlinkSync(mine);', 'owed = parseJson(safeRead(mine)); fs.renameSync(mine, p);'],
   ['grok: stale marker delivered', G, 'ageMs(owed.at) <= PENDING_MAX_AGE_MS ? owed : null', 'owed'],
   ['grok: no late-delivery wording', G, "menu(cwd, data.session_id, 'late')", 'menu(cwd, data.session_id)'],
   ['grok: notes command repeats the menu', G, "if (owed?.kind === 'menu' && !ranNotes)", "if (owed?.kind === 'menu')"],
@@ -108,6 +108,9 @@ const mutations = [
   ['grok: wrapped step tail ends the Steps list', G, "if (items.length && t && /^\\s/.test(line)) { items[items.length - 1] += ' ' + t; continue; }", ''],
   ['grok: hand-back notice says newer chat', G, "t?.kind === 'handback' ? 'handed back to the chat that started it' : 'handed off to a newer chat'", "'handed off to a newer chat'"],
   ['grok: continue-here does not tell the model', G, "owe(cwd, data.session_id, 'resumed');\n      return;", 'return;'],
+  ['grok: the claim lock is not exclusive', G, "fs.closeSync(fs.openSync(lock, 'wx'));", "fs.closeSync(fs.openSync(lock, 'w'));"],
+  ['grok: a dead call\'s claim lock never clears', G, 'if (Date.now() - fs.statSync(lock).mtimeMs > CLAIM_STALE_MS) fs.unlinkSync(lock);', 'void 0;'],
+  ['grok: the claim lock is never released', G, 'try { fs.unlinkSync(lock); } catch { /* released */ }', 'void 0;'],
   ['grok: stale tool-ran marker survives a new prompt', G, 'claimTurnTool(cwd, data.session_id); // new turn', 'void 0; // new turn'],
   // D: the Grok Stop recap gate
   ['grok: stop recap gate off', G, 'if (GROK && toolRan && !data.stop_hook_active && !hasHandoff(text)) {', 'if (false) {'],

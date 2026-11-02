@@ -150,8 +150,8 @@ each tool and point back to it for the reasons.
 ## Check it before you install it
 
 ```sh
-node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs   # 71 tests; never touches your real home folder
-node mutate.mjs                                                                               # 96 mutations; every one must be KILLED
+node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs   # 72 tests; never touches your real home folder
+node mutate.mjs                                                                               # 99 mutations; every one must be KILLED
 ```
 
 Run all three test files even if you use only one tool: they share one script. The mutation run breaks each
@@ -187,7 +187,7 @@ documented hook events and JSON shapes; if a tool changes those, the tests here 
 | `GROK.snippet.md`               | Grok        | The recap convention and handoff rules, for `~/.grok/rules/`                                |
 | `handoff-guard.test.mjs`        | Claude Code | 21 tests, including the installer's merge into your own settings                            |
 | `handoff-guard.codex.test.mjs`  | Codex       | 20 tests, including every JSON shape Codex accepts                                          |
-| `handoff-guard.grok.test.mjs`   | Grok        | 30 tests: the Windows status line, the hand-off notice, the Stop recap gate and more        |
+| `handoff-guard.grok.test.mjs`   | Grok        | 31 tests: the Windows status line, the hand-off notice, the Stop recap gate and more        |
 | `mutate.mjs`                    | all three   | Breaks each guard in turn and checks that a test notices                                    |
 | `package.json`                  | all three   | `npm test` and `npm run mutate`; no dependencies                                            |
 | `.github/workflows/test.yml`    | all three   | Runs the tests on Ubuntu and Windows for Node 20, 22 and 24, and the mutation run on Ubuntu; rebuilds and checks the diagrams |
@@ -204,7 +204,7 @@ documented hook events and JSON shapes; if a tool changes those, the tests here 
 
 ## Status
 
-Early public release. The layout is flat on purpose: it is the exact tree the 71 tests and 96 mutations were
+Early public release. The layout is flat on purpose: it is the exact tree the 72 tests and 99 mutations were
 proven on. A folder per tool is planned next, with the same proof re-run. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Where it came from
