@@ -96,16 +96,16 @@ Everything is stored as small JSON files under `~/.claude/handoff/`, one folder 
 
 | File                             | What it does                                                                                                                                                                   |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `handoff-guard.mjs`              | The script: 8 hook modes and 4 commands, 625 lines, Node built-ins only (`posttool` and `notes` are used only by Grok)                                                         |
-| `handoff-guard.test.mjs`         | 21 tests; each runs in a throwaway home folder and a throwaway git repo                                                                                                        |
+| `handoff-guard.mjs`              | The script: 8 hook modes and 4 commands, 694 lines, Node built-ins only (`posttool` and `notes` are used only by Grok)                                                         |
+| `handoff-guard.test.mjs`         | 24 tests; each runs in a throwaway home folder and a throwaway git repo                                                                                                        |
 | `mutate.mjs`                     | Breaks each guard in turn and checks that a test notices (section 7)                                                                                                           |
 | `install-claude.mjs`             | The installer: copies the script and merges the two files below into your `~/.claude`; a dry run unless you add `--write` (section 4)                                          |
 | `settings.fragment.json`         | The hook and status line entries to merge into `~/.claude/settings.json`                                                                                                       |
 | `CLAUDE.snippet.md`              | The recap convention, the definition of done, and compaction instructions                                                                                                      |
 | `BUILD-YOUR-OWN-CHAT-HANDOFF.md` | This guide                                                                                                                                                                     |
 | `README.md`                      | A one-page index of the kit                                                                                                                                                    |
-| Codex files                      | `BUILD-YOUR-OWN-CODEX-HANDOFF.md`, `codex-hooks.json`, `install-codex.mjs`, `AGENTS.snippet.md` and `handoff-guard.codex.test.mjs` (16 tests). Claude Code does not need them. |
-| Grok files                       | `BUILD-YOUR-OWN-GROK-HANDOFF.md`, `grok-hooks.json`, `install-grok.mjs`, `GROK.snippet.md` and `handoff-guard.grok.test.mjs` (28 tests). Claude Code does not need them.       |
+| Codex files                      | `BUILD-YOUR-OWN-CODEX-HANDOFF.md`, `codex-hooks.json`, `install-codex.mjs`, `AGENTS.snippet.md` and `handoff-guard.codex.test.mjs` (20 tests). Claude Code does not need them. |
+| Grok files                       | `BUILD-YOUR-OWN-GROK-HANDOFF.md`, `grok-hooks.json`, `install-grok.mjs`, `GROK.snippet.md` and `handoff-guard.grok.test.mjs` (31 tests). Claude Code does not need them.       |
 
 The commands Claude Code uses are `takeover` and `resume-here` (run by Claude, phase 5) and `list`, which you
 run yourself to see this folder's notes without opening a chat: `node ~/.claude/handoff-guard.mjs list`.
@@ -126,7 +126,7 @@ on yours), Node.js 18 or later, and git.
    node --test handoff-guard.test.mjs
    ```
 
-   All 20 should pass. They never touch your real `~/.claude` folder. (If you change the script, also run
+   All 24 should pass. They never touch your real `~/.claude` folder. (If you change the script, also run
    `handoff-guard.codex.test.mjs` and `handoff-guard.grok.test.mjs`: the Codex and Grok versions share the same
    file.)
 
@@ -204,7 +204,7 @@ Steps:
 ○ memory updated
 Files:
   src/auth/throttle.ts
-  src/auth/login.ts
+  src/auth/login.ts                                              🛡 Southlodge.ai
 ```
 
 Every rule in the convention exists for a reason:
@@ -217,6 +217,7 @@ Every rule in the convention exists for a reason:
 | A specific title of 8 to 20 words                         | It is the note's name in the menu. "handoff fixes" means nothing a week later; "Login rate limit: per-IP throttle, lockout tests and docs" does. |
 | `ETA:`                                                    | Helps you choose which chat to resume.                                                                                                           |
 | Lines no wider than 80 characters                         | Readable in narrow side panels without scrolling sideways.                                                                                       |
+| The last line ends with the Southlodge sign-off           | Branding, pushed right to column 80. The script strips it before it reads the block; delete it from the snippet to leave it out.                 |
 | At most 12 steps                                          | Long lists get cut off in menus; group small steps.                                                                                              |
 
 The full text to paste is in `CLAUDE.snippet.md`.
@@ -244,6 +245,9 @@ The full text to paste is in `CLAUDE.snippet.md`.
 
 **Parsing rules:**
 
+- **The sign-off is removed first.** Two or more spaces and then `🛡 Southlodge.ai` at the end of a line (the
+  shield may carry the emoji variation selector, U+FE0F) are cut off before the rules below run, so the mark
+  never becomes part of a step, the title or the ETA. The note's summary keeps the line as written.
 - `Progress: N/M ▓▓░░ P% — title` or `Progress: P% — title`. The title is everything after the dash. If the
   next line is indented, it continues the title.
 - `Steps:` alone on a line, then one step per line. A line starting `✓`, `✔` or `[x]` is done; `→` is next;
@@ -497,7 +501,9 @@ Write each trigger as a flat `\b(word|word)\b` list with no nested repeats, so m
 ### 6.2 A width gate
 
 The gate blocks once when any line inside the last `HANDOFF` block is wider than 80 columns, and names the lines.
-Long lines force sideways scrolling in narrow panes.
+Long lines force sideways scrolling in narrow panes. Count characters by code point (`[...line].length`), not
+with `line.length`: the sign-off's shield is one character but two UTF-16 units, so `.length` would call the
+signed line 81 wide.
 
 ### 6.3 A task contract, and scope drift
 
@@ -622,9 +628,9 @@ The kit's tests show the approach:
 
 Then **prove the tests can fail.** A check that can never fire looks exactly like a check that works. For each
 guard, delete it or flip it, run the tests, and confirm at least one fails. This is called mutation testing. The
-kit was checked this way. The 10 mutations below cover the Claude Code guards; `mutate.mjs` runs 99 in all
-(these 10, one for the transcript token reader, three for file names with non-ASCII letters, 12 for the Claude
-installer, 12 for the Codex host, 1 for the Codex hooks, 5 for the Codex installer and 55 for Grok). The 71 before the 2026-10-30 Grok round were killed
+kit was checked this way. The 10 mutations below cover the Claude Code guards; `mutate.mjs` runs 103 in all
+(these 10, one for the transcript token reader, three for file names with non-ASCII letters, four for the sign-off
+mark, 12 for the Claude installer, 12 for the Codex host, 1 for the Codex hooks, 5 for the Codex installer and 55 for Grok). The 71 before the 2026-10-30 Grok round were killed
 on Windows 11 and on Ubuntu 26.04 (Node 22); the 14 added that round were each proven killed on a throwaway
 copy; the full 85-mutant release run on 2026-10-30 killed 85/85 on Ubuntu 26.04 (Node 22) and, on Windows 11
 (Node 24), 84 in the full run plus the repaired 85th proven killed on a throwaway copy of the same kit state. The round for gaps 88 and 89 (our finding numbers; the matching tests carry them) (2026-10-30 evening) added 2 tests (66) and 2 mutations (87); those two and the one repaired hand-back mutation were each proven killed on a throwaway copy, every from-string was checked to match exactly once, and the full 87-mutant release run on 2026-10-31 killed 87/87 on both Windows 11 (Node 24, 39 min) and Ubuntu 26.04 (Node 22, 56 min), exit 0, after the run itself found a parse error in the shipped list, fixed as gap 90 (`--list` self-check + a 67th test).
@@ -777,3 +783,7 @@ Notes are per project **folder**. A chat opened in a subfolder or a different cl
   in every chat.
 - **Test that every check can fail.** Our worst bugs were checks that looked right and could never fire.
 - **Restart after editing hooks.** Running chats keep the hooks they started with.
+- **Decoration is not data.** A sign-off on the last line would be saved as part of the last step (or the
+  title, or the ETA) unless the parser strips it. Strip it only after two or more spaces, so a step that merely
+  ends with the same words keeps them, and accept the shield with the emoji variation selector too: models
+  often add one.

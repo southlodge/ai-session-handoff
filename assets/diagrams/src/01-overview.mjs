@@ -4,40 +4,40 @@
 //
 // Every behavioural sentence below is checkable in this kit (checked 2026-11-02; check-cites.mjs prints each cited
 // line beside its claim). A bare :N is always a line of handoff-guard.mjs; any other file is named. claim → source:
-//   hook modes session-start, prompt, pretool, posttool, stop, complete-check, compacted, statusline   :675, :5-12
-//   commands takeover, resume-here, notes (run by the model) and list (run by you)          :676, :13-16
-//   say "carry on" and the model runs takeover for you                                      :463
+//   hook modes session-start, prompt, pretool, posttool, stop, complete-check, compacted, statusline   :687, :5-12
+//   commands takeover, resume-here, notes (run by the model) and list (run by you)          :688, :13-16
+//   say "carry on" and the model runs takeover for you                                      :475
 //   each hook event runs one mode; Stop runs two      settings.fragment.json:43, settings.fragment.json:53
-//   posttool runs on Grok only                                                              :10, :505
+//   posttool runs on Grok only                                                              :10, :517
 //   default host ~/.claude, no flag; --host codex -> ~/.codex, --host grok -> ~/.grok        :18-20, :43-44
 //   Claude Code fires five hook events, plus a status line
 //       settings.fragment.json:2-5 (statusLine), settings.fragment.json:7-69 (five event keys)
-//   Codex fires four (SessionStart, UserPromptSubmit, PreToolUse, Stop), no status line   codex-hooks.json:4-52, :660
+//   Codex fires four (SessionStart, UserPromptSubmit, PreToolUse, Stop), no status line   codex-hooks.json:4-52, :672
 //   Grok fires seven, plus a [ui.status_line] you paste in                   grok-hooks.json:3-90, install-grok.mjs:55
 //   Codex: the nudge reads token_count events
-//       :200, :220, test "the big-chat nudge reads Codex token_count events"
+//       :212, :232, test "the big-chat nudge reads Codex token_count events"
 //   with no status line, list shows the bars
-//       :660-661, test "list shows each note with its bar, session, age and next step"
+//       :672-673, test "list shows each note with its bar, session, age and next step"
 //   Grok: the menu is owed, then arrives with the first tool result
-//       :501, :515, test "session-start prints nothing; the first tool result carries the menu, once"
-//   Grok: the status line caches the chat's size                 :627, test "caches the size for the note"
+//       :513, :527, test "session-start prints nothing; the first tool result carries the menu, once"
+//   Grok: the status line caches the chat's size                 :639, test "caches the size for the note"
 //   each chat's recap is saved as JSON in its tool's folder; one note per chat; kept 72 h; this machine only
-//       :45, :64, :48, :243, :27-30 (node built-ins only)
+//       :45, :64, :48, :255, :27-30 (node built-ins only)
 //   credential shapes are redacted before a note is written
 //       :111-124, test "credential shapes are redacted before a note is written"
 //   other chats' notes are shown to the model as data, never instructions
-//       :433-437, test "inside the data envelope, and a forged marker is removed"
+//       :445-449, test "inside the data envelope, and a forged marker is removed"
 //   at 100%, git must show the docs a recap names really changed; if not, sent back with the reason, on every try
-//       :402-414, test "complete-check blocks, on every pass, a docs step that names a file git shows unchanged"
-//   no repository: nothing to check                                                         :371, :408
+//       :414-426, test "complete-check blocks, on every pass, a docs step that names a file git shows unchanged"
+//   no repository: nothing to check                                                         :383, :420
 //   every mode exits 0, so a broken hook never blocks the tool
-//       :4, :680-681, test "every hook mode exits 0 on empty or malformed input"
-//   it writes only to its own handoff folder, and git is only read (status, diff, show)   :45, :63-69, :81-82, :343-345
+//       :4, :692-693, test "every hook mode exits 0 on empty or malformed input"
+//   it writes only to its own handoff folder, and git is only read (status, diff, show)   :45, :63-69, :81-82, :355-357
 //   installers: a dry run until --write; each backs up every file it changes; Node 20 or later
 //       test "installer: a dry run writes nothing", test "keeps your own entries, backs up, and is idempotent",
 //       package.json:28-29
-//   72 tests (21 + 20 + 31) and 99 mutations, all killed; CI on Ubuntu and Windows, Node 20, 22 and 24
-//       node mutate.mjs --list ("99/99 mutations match"), .github/workflows/test.yml:19-20,
+//   75 tests (24 + 20 + 31) and 103 mutations, all killed; CI on Ubuntu and Windows, Node 20, 22 and 24
+//       node mutate.mjs --list ("103/103 mutations match"), .github/workflows/test.yml:19-20,
 //       .github/workflows/test.yml:27-29 (npm test everywhere, npm run mutate on Ubuntu, Node 22)
 import { C, doc, header, footer, arrow, band, card, panel, badge, text, rect, tint, mix, pill, tw, wrap, getTheme, registerBox, registerText } from './svg-kit.mjs';
 
@@ -245,7 +245,7 @@ export function render() {
     },
     {
       color: C.you, title: 'Proof you can run',
-      body: '72\u00a0tests and 99\u00a0mutations, all killed: run them before you install. CI on Ubuntu and Windows, Node\u00a020, 22 and 24.',
+      body: '75\u00a0tests and 103\u00a0mutations, all killed: run them before you install. CI on Ubuntu and Windows, Node\u00a020, 22 and 24.',
     },
     {
       color: C.git, title: 'What it never does',

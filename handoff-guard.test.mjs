@@ -37,6 +37,16 @@ function sandbox() {
 const recap = (steps, title = 'Login rate limit: add a per-IP throttle and tests to the auth endpoint') =>
   `Work done.\n\n\`\`\`text\nHANDOFF\nProgress: 0/0 ░░░░░░░░░░ 0% — ${title}\nETA: ~20 min this task\nSteps:\n${steps.join('\n')}\nFiles:\n  src/auth.ts\n\`\`\``;
 
+// The sign-off the snippets put on the block's last line, padded here to column 80 (the Codex snippet uses 76).
+const MARK = '🛡 Southlodge.ai';
+const signed = (line, mark = MARK) => `${line}${' '.repeat(65 - [...line].length)}${mark}`;
+const block = (lines) => `Work done.\n\n\`\`\`text\nHANDOFF\n${lines.join('\n')}\n\`\`\``;
+const TITLE = ['Progress: 1/2 ▓▓▓▓▓░░░░░ 50% — Login rate limit: per-IP throttle,', '  lockout tests and docs for the auth endpoint'];
+const noteOf = (s, sid) => {
+  const store = path.join(s.home, '.claude', 'handoff');
+  return JSON.parse(fs.readFileSync(path.join(store, fs.readdirSync(store).find((d) => !d.startsWith('_')), `${sid}.json`), 'utf8'));
+};
+
 test('stop saves a note whose bar is derived from the Steps list, not the typed numbers', () => {
   const s = sandbox();
   s.run('stop', { session_id: 'old-1', cwd: s.project, last_assistant_message: recap(['✓ read handler', '✓ add throttle', '→ write tests', '○ update docs']) });
@@ -48,7 +58,7 @@ test('stop saves a note whose bar is derived from the Steps list, not the typed 
   assert.equal(note.name, 'login-rate-limit-add-per');
 });
 
-test('the CLAUDE.snippet.md example parses: wrapped title joined, bar from the steps', () => {
+test('the CLAUDE.snippet.md example parses: wrapped title joined, bar from the steps, sign-off in column 80', () => {
   const s = sandbox();
   const snippet = fs.readFileSync(path.join(path.dirname(SCRIPT), 'CLAUDE.snippet.md'), 'utf8').replace(/\r\n/g, '\n');
   const example = /Example:\n\n(```text\n[\s\S]*?\n```)/.exec(snippet)[1];
@@ -58,7 +68,55 @@ test('the CLAUDE.snippet.md example parses: wrapped title joined, bar from the s
   assert.equal(note.progress.label, 'Login rate limit: per-IP throttle, lockout tests and docs for the auth endpoint');
   assert.deepEqual([note.progress.done, note.progress.total, note.progress.pct], [2, 5, 40]);
   assert.equal(note.progress.next, 'write the lockout tests');
-  assert.ok(example.split('\n').every((l) => l.length <= 80), 'example lines fit in 80 columns');
+  const lines = example.split('\n');
+  assert.ok(lines.every((l) => [...l].length <= 80), 'example lines fit in 80 columns');
+  const last = lines[lines.length - 2]; // the line before the closing fence
+  assert.ok(last.endsWith(`  ${MARK}`) && [...last].length === 80, 'the sign-off ends in column 80');
+  assert.ok(!snippet.includes('\u{FE0F}'), 'the shield has no emoji variation selector');
+});
+
+// ---- the sign-off mark is decoration, never data (2026-11-04: the public kit carries the Southlodge mark) ----------
+test('the sign-off mark is stripped before parsing: not in a step, the next step, the ETA or the title', () => {
+  const s = sandbox();
+  const save = (sid, lines) => { s.run('stop', { session_id: sid, cwd: s.project, last_assistant_message: block(lines) }); return noteOf(s, sid); };
+  // No Files list, so the last step carries the mark, as the snippets say.
+  let note = save('a', [...TITLE, 'ETA: ~20 min this task', 'Steps:', '✓ read the login handler', signed('→ write the lockout tests')]);
+  assert.deepEqual(note.progress.steps.map((x) => x.text), ['read the login handler', 'write the lockout tests']);
+  assert.equal(note.progress.next, 'write the lockout tests');
+  assert.ok(note.summary.includes(MARK), 'the saved summary keeps the recap as written');
+  // A wrapped last step: the mark sits on its indented second line.
+  note = save('b', [...TITLE, 'Steps:', '✓ read the login handler', '→ write the lockout tests for the', signed('  login endpoint')]);
+  assert.equal(note.progress.next, 'write the lockout tests for the login endpoint');
+  // The mark alone on a line of its own, after the last step, is not glued onto that step.
+  note = save('c', [...TITLE, 'Steps:', '✓ read the login handler', '→ write the lockout tests', signed('')]);
+  assert.deepEqual(note.progress.steps.map((x) => x.text), ['read the login handler', 'write the lockout tests']);
+  // Wherever else it lands, the title and the ETA come out clean (one recap tests both places at once).
+  note = save('d', [TITLE[0], signed(TITLE[1]), signed('ETA: ~20 min this task'), 'Steps:', '✓ read the login handler', '→ write the lockout tests']);
+  assert.equal(note.progress.label, 'Login rate limit: per-IP throttle, lockout tests and docs for the auth endpoint');
+  assert.equal(note.progress.eta, '~20 min this task');
+});
+
+test('the sign-off strip works on a one-line Steps list, a CRLF recap and the emoji form of the shield', () => {
+  const s = sandbox();
+  const save = (sid, text) => { s.run('stop', { session_id: sid, cwd: s.project, last_assistant_message: text }); return noteOf(s, sid); };
+  assert.equal(save('a', block([...TITLE, signed('Steps: ✓ read handler · → write the lockout tests')])).progress.next, 'write the lockout tests');
+  const crlf = block([...TITLE, 'Steps:', '✓ read the login handler', signed('→ write the lockout tests')]).replace(/\n/g, '\r\n');
+  assert.equal(save('b', crlf).progress.next, 'write the lockout tests');
+  const emoji = signed('→ write the lockout tests', '\u{1F6E1}\u{FE0F} Southlodge.ai'); // some models add U+FE0F
+  assert.equal(save('c', block([...TITLE, 'Steps:', '✓ read the login handler', emoji])).progress.next, 'write the lockout tests');
+});
+
+test('the sign-off strip keeps a step that merely ends with the words, and changes no complete-check verdict', () => {
+  const s = sandbox();
+  s.run('stop', { session_id: 'a', cwd: s.project, last_assistant_message: block([...TITLE, 'Steps:', '✓ read the login handler', `→ sign the recap with ${MARK}`]) });
+  assert.equal(noteOf(s, 'a').progress.next, `sign the recap with ${MARK}`, 'one space before the words is prose, not padding');
+  // A marked docs step is checked exactly like an unmarked one: git must show that the doc it names changed.
+  const msg = block(['Progress: 3/3 ▓▓▓▓▓▓▓▓▓▓ 100% — Login rate limit: per-IP throttle, tests and docs', 'Steps:', '✓ add throttle', '✓ memory updated', signed('✓ planning docs updated: docs/plan.md')]);
+  const out = s.json('complete-check', { session_id: 'x', cwd: s.project, last_assistant_message: msg });
+  assert.equal(out?.decision, 'block');
+  assert.match(out.reason, /names docs\/plan\.md, but/);
+  fs.appendFileSync(path.join(s.project, 'docs', 'plan.md'), 'rate limit shipped\n');
+  assert.equal(s.run('complete-check', { session_id: 'x', cwd: s.project, last_assistant_message: msg }), '');
 });
 
 test('a reply without a recap keeps the previous bar', () => {

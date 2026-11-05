@@ -87,9 +87,9 @@ Every Grok hook command ends with `--host grok`. The flag changes four things:
 | `grok-hooks.json`              | The Grok hook entries, with a `__HANDOFF_GUARD__` placeholder for the script's path        |
 | `GROK.snippet.md`              | The recap convention, the handoff rules and the definition of done, for Grok               |
 | `install-grok.mjs`             | Copies the script, the hooks file and the rules file into `~/.grok`; dry run by default    |
-| `handoff-guard.grok.test.mjs`  | 28 tests for the Grok side                                                                 |
-| `handoff-guard.test.mjs`       | 21 tests for the Claude Code side                                                          |
-| `handoff-guard.codex.test.mjs` | 16 tests for the Codex side (run all three; they share one script)                         |
+| `handoff-guard.grok.test.mjs`  | 31 tests for the Grok side                                                                 |
+| `handoff-guard.test.mjs`       | 24 tests for the Claude Code side                                                          |
+| `handoff-guard.codex.test.mjs` | 20 tests for the Codex side (run all three; they share one script)                         |
 | `mutate.mjs`                   | Breaks each guard in turn and checks that a test notices (section 6)                       |
 
 ---
@@ -105,7 +105,7 @@ Every Grok hook command ends with `--host grok`. The flag changes four things:
    node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs
    ```
 
-   All 67 should pass.
+   All 75 should pass.
 
 2. **See what the installer would change.** With no flags it only reports:
 
@@ -226,6 +226,9 @@ The phase numbers match the Claude Code guide, which explains each design choice
 `GROK.snippet.md` asks for the same `HANDOFF` block as the other versions. The installer writes it to
 `~/.grok/rules/chat-handoff.md`. Grok loads every `*.md` directly inside `$GROK_HOME/rules/` in every project,
 whether or not the folder is trusted.
+
+As in Claude Code, it ends the block with the sign-off `🛡 Southlodge.ai`, pushed right to column 80 (Codex uses 76).
+The script strips the mark before it reads the block (phase 2 of the Claude Code guide).
 
 ### Phase 2: save a note (`Stop`, mode `stop`)
 
@@ -412,7 +415,7 @@ and `PostCompact` always re-attaches the chat's own recap.
 ## 6. Testing it properly
 
 ```sh
-node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs   # 64 tests
+node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs   # 75 tests
 node mutate.mjs                                                                               # proves they can fail
 ```
 
@@ -438,7 +441,8 @@ a throwaway home folder and a throwaway git repo. They check:
 - a menu over 10,000 characters drops its oldest notes whole, and a single oversized note is cut in the middle,
   keeping the rules in both cases;
 - the Claude Code hooks do nothing when Grok runs them;
-- the example in `GROK.snippet.md` parses (title, 2/5, 40%, no line over 80 characters);
+- the example in `GROK.snippet.md` parses (title, 2/5, 40%, no line over 80 characters) and its last line ends
+  with the sign-off in column 80;
 - `grok-hooks.json` has the documented shape, names only real modes, uses Grok's `SessionStart` matchers
   (`new`, `load`) rather than Claude Code's, and gives each the matching `--source`;
 - the installer's dry run writes nothing; a real run writes its three files and never `config.toml`, is
@@ -449,9 +453,9 @@ a throwaway home folder and a throwaway git repo. They check:
   quotes; off Windows there is no `.cmd` and the status line is the quoted node call.
 
 **Mutation testing.** `mutate.mjs` copies the whole kit to a temporary folder, checks that the unmutated copy
-passes all three test files, then applies 99 mutations one at a time (14 shared guards, 12 Codex guards, 1 Codex
-hooks guard, 42 Grok guards, 3 Grok hook-file guards, and 5 Codex, 10 Grok and 12 Claude installer guards). Each
-must be `KILLED` (a test failed). `SURVIVED` means no test
+passes all three test files, then applies 103 mutations one at a time (18 shared guards, four of them for the
+sign-off mark; 12 Codex guards; 1 Codex hooks guard; 42 Grok guards; 3 Grok hook-file guards; and 5 Codex, 10
+Grok and 12 Claude installer guards). Each must be `KILLED` (a test failed). `SURVIVED` means no test
 noticed; `MISSING` means the code it targets has changed. The claim when tool calls finish at once is covered
 in two ways: one test runs four `posttool` calls at the same moment and checks that the menu arrives once, and a
 second holds the lock by hand, so dropping the exclusive flag, never releasing the lock or never clearing a dead

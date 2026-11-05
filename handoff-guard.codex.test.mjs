@@ -197,7 +197,7 @@ test('Codex complete-check: a read-only 100% task passes; changed files need a d
   assert.equal(s.run('complete-check', { session_id: 'x', cwd: s.project, last_assistant_message: recap(['✓ edit the plan', '✓ planning docs: none affected (checked docs/planning)']) }), '', 'the honest none-affected form passes too');
 });
 
-test('the AGENTS.snippet.md example parses: wrapped title joined, bar from the steps', () => {
+test('the AGENTS.snippet.md example parses: wrapped title joined, bar from the steps, sign-off in column 76', () => {
   const s = sandbox();
   const snippet = fs.readFileSync(path.join(KIT, 'AGENTS.snippet.md'), 'utf8').replace(/\r\n/g, '\n');
   const example = /Example:\n\n(```text\n[\s\S]*?\n```)/.exec(snippet)[1];
@@ -205,7 +205,11 @@ test('the AGENTS.snippet.md example parses: wrapped title joined, bar from the s
   const n = s.note('old-1');
   assert.equal(n.progress.label, 'Login rate limit: per-IP throttle, lockout tests and docs for the auth endpoint');
   assert.deepEqual([n.progress.done, n.progress.total, n.progress.pct], [2, 5, 40]);
-  assert.ok(example.split('\n').every((l) => l.length <= 80), 'example lines fit in 80 columns');
+  const lines = example.split('\n');
+  assert.ok(lines.every((l) => [...l].length <= 80), 'example lines fit in 80 columns');
+  const last = lines[lines.length - 2]; // the line before the closing fence
+  assert.ok(last.endsWith('  🛡 Southlodge.ai') && [...last].length === 76, 'the sign-off ends in column 76');
+  assert.ok(!snippet.includes('\u{FE0F}'), 'the shield has no emoji variation selector');
 });
 
 test('codex-hooks.json has the documented Codex shape and only names real modes', () => {

@@ -48,7 +48,7 @@ Steps:
 ○ memory updated
 Files:
   src/auth/throttle.ts
-  src/auth/login.ts
+  src/auth/login.ts                                              🛡 Southlodge.ai
 ```
 
 The next chat you open in that folder is told, before you type anything:
@@ -150,12 +150,28 @@ each tool and point back to it for the reasons.
 ## Check it before you install it
 
 ```sh
-node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs   # 72 tests; never touches your real home folder
-node mutate.mjs                                                                               # 99 mutations; every one must be KILLED
+node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs   # 75 tests; never touches your real home folder
+node mutate.mjs                                                                               # 103 mutations; every one must be KILLED
 ```
 
 Run all three test files even if you use only one tool: they share one script. The mutation run breaks each
 guard in turn and checks that a test notices, so a passing suite means the tests are real.
+
+## The sign-off
+
+Each snippet asks the chat to end its handoff block with the sign-off `🛡 Southlodge.ai`, pushed right so that its
+last letter sits in column 80, or in column 76 in the Codex snippet: with wrap on, the Codex panel holds just under
+80 columns, so a full 80-column line would break at the space after the shield. The script treats the mark as
+decoration, not data: before it reads the block it strips the mark and the spaces in front of it, so the mark is
+never saved as part of a step, the next step, the ETA or the title. The copy of the block that the note keeps
+still has the mark, as written.
+
+To leave the mark out, delete the sign-off paragraph from your snippet and the mark from the snippet's example,
+and drop the line in that snippet's example test that checks for it. Nothing else changes: with no mark in the
+block, the script reads it exactly as before. If you ship your own version, take the mark out or put your own in
+its place, because the Southlodge name is not covered by the licence. It appears in the snippets, in `SIGN_OFF`
+and `SIGN_OFF_EMOJI` in `handoff-guard.mjs`, in `MARK` and the emoji form in `handoff-guard.test.mjs`, and in the
+example checks of the Codex and Grok tests.
 
 ## Tested with
 
@@ -185,7 +201,7 @@ documented hook events and JSON shapes; if a tool changes those, the tests here 
 | `grok-hooks.json`               | Grok        | Hook entries for `~/.grok/hooks/handoff-guard.json` (the installer fills in the path)       |
 | `install-grok.mjs`              | Grok        | Copies the script, hooks file and rules file; dry run unless `--write`                      |
 | `GROK.snippet.md`               | Grok        | The recap convention and handoff rules, for `~/.grok/rules/`                                |
-| `handoff-guard.test.mjs`        | Claude Code | 21 tests, including the installer's merge into your own settings                            |
+| `handoff-guard.test.mjs`        | Claude Code | 24 tests, including the installer's merge into your own settings                            |
 | `handoff-guard.codex.test.mjs`  | Codex       | 20 tests, including every JSON shape Codex accepts                                          |
 | `handoff-guard.grok.test.mjs`   | Grok        | 31 tests: the Windows status line, the hand-off notice, the Stop recap gate and more        |
 | `mutate.mjs`                    | all three   | Breaks each guard in turn and checks that a test notices                                    |
@@ -204,7 +220,7 @@ documented hook events and JSON shapes; if a tool changes those, the tests here 
 
 ## Status
 
-Early public release. The layout is flat on purpose: it is the exact tree the 72 tests and 99 mutations were
+Early public release. The layout is flat on purpose: it is the exact tree the 75 tests and 103 mutations were
 proven on. A folder per tool is planned next, with the same proof re-run. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Where it came from
