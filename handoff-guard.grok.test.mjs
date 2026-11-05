@@ -271,7 +271,11 @@ test('the GROK.snippet.md example parses within 80 columns, and the snippet name
   const n = s.note('old-1');
   assert.equal(n.progress.label, 'Login rate limit: per-IP throttle, lockout tests and docs for the auth endpoint');
   assert.deepEqual([n.progress.done, n.progress.total, n.progress.pct], [2, 5, 40]);
-  assert.ok(example.split('\n').every((l) => l.length <= 80), 'example lines fit in 80 columns');
+  const lines = example.split('\n');
+  assert.ok(lines.every((l) => [...l].length <= 80), 'example lines fit in 80 columns');
+  const last = lines[lines.length - 2]; // the line before the closing fence
+  assert.ok(last.endsWith('  🛡 Southlodge.ai') && [...last].length === 80, 'the sign-off ends in column 80');
+  assert.ok(!snippet.includes('\u{FE0F}'), 'the shield has no emoji variation selector');
   assert.ok(snippet.includes('`node "__HANDOFF_GUARD__" notes --cwd "<the current folder>" --host grok`'));
   assert.match(snippet, /scheduler_delete/);
 });

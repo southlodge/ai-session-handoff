@@ -3,26 +3,26 @@
 // Every behavioural sentence below is checkable in this kit (checked 2026-11-02; check-cites.mjs prints each cited
 // line beside its claim). A bare :N is a line of handoff-guard.mjs. claim → source:
 //   session-start lists this folder's notes newer than 72 h, one menu line each: bar, title, age
-//       handoff-guard.mjs:473 (sessionStart), :442 (menu), :458 (menu line), :234 (listNotes), :48 (NOTE_MAX_AGE_MS)
-//   a burst of starts gets no menu                     :498, test "session-start skips the menu for a burst of starts"
-//   prompt reads this chat's takeover mark; handed off: say the work moved on, and stop   :531 (prompt), :534, :554-559
-//   prompt: past 200k tokens, a nudge to start a new chat                                 :53 (NUDGE_TOKENS), :565-567
+//       handoff-guard.mjs:485 (sessionStart), :454 (menu), :470 (menu line), :246 (listNotes), :48 (NOTE_MAX_AGE_MS)
+//   a burst of starts gets no menu                     :510, test "session-start skips the menu for a burst of starts"
+//   prompt reads this chat's takeover mark; handed off: say the work moved on, and stop   :543 (prompt), :546, :566-571
+//   prompt: past 200k tokens, a nudge to start a new chat                                 :53 (NUDGE_TOKENS), :577-579
 //   pretool: handed off: deny all but resume-here and the stop-work tools, naming the new chat
-//       :579 (pretool), :578 (STOP_TOOLS), :584-586, :597 (the reason names session t.by); no mark: allow at once :582
+//       :591 (pretool), :590 (STOP_TOOLS), :596-598, :609 (the reason names session t.by); no mark: allow at once :594
 //   each reply that does work ends with a HANDOFF recap   CLAUDE.snippet.md:3-4; :131 (recapOf reads the last HANDOFF block)
-//   stop saves the recap as <session>.json: summary (the recap) and progress (the bar)    :302 (stop), :314-325, :64
+//   stop saves the recap as <session>.json: summary (the recap) and progress (the bar)    :314 (stop), :326-337, :64
 //   complete-check: at 100% the Steps need a docs step and a memory step; named docs must have changed (git)
-//       :393 (completeCheck), :405-414, :415 (once), test "complete-check blocks a 100% recap that has no docs or memory step, but only once"
-//   compacted keeps the summary on the note; the bar stays   :603 (compacted), :613, test "compacted keeps the compaction summary on the note"
+//       :405 (completeCheck), :417-426, :427 (once), test "complete-check blocks a 100% recap that has no docs or memory step, but only once"
+//   compacted keeps the summary on the note; the bar stays   :615 (compacted), :625, test "compacted keeps the compaction summary on the note"
 //   statusline paints the context gauge and the chat's bar with its next step, and HANDED OFF if marked
-//       :618 (statusline), :628, :630, :631, :191 (gauge)
+//       :630 (statusline), :640, :642, :643, :203 (gauge)
 //   install: a dry run; --write copies the script, merges settings.json, adds the CLAUDE.md rule, backs up each file
 //       install-claude.mjs:3-5
-//   the model runs takeover, resume-here and notes; list prints the bars for you   :636, :645, :653-655, :660-661, :676
-//   notes are plain JSON in ~/.claude/handoff/, kept 72 h, this machine only       :48, :243, :64 (notePath)
-//   the hooks read only this folder’s notes: one directory per folder   :45 (ROOT), :63 (projectDir), :234-235 (listNotes)
+//   the model runs takeover, resume-here and notes; list prints the bars for you   :648, :657, :665-667, :672-673, :688
+//   notes are plain JSON in ~/.claude/handoff/, kept 72 h, this machine only       :48, :255, :64 (notePath)
+//   the hooks read only this folder’s notes: one directory per folder   :45 (ROOT), :63 (projectDir), :246-247 (listNotes)
 //   no network, no telemetry, no dependencies; every mode exits 0
-//       :27-30 (node built-ins only), :680-681, test "every hook mode exits 0 on empty or malformed input"
+//       :27-30 (node built-ins only), :692-693, test "every hook mode exits 0 on empty or malformed input"
 import { C, doc, header, footer, arrow, band } from './svg-kit.mjs';
 import { sequence } from './sequence.mjs';
 

@@ -9,34 +9,34 @@
 //   PostToolUseFailure, PostCompact, Stop (stop, then complete-check); each runs with --host grok
 //       grok-hooks.json:5, grok-hooks.json:15, grok-hooks.json:36, grok-hooks.json:58; :47 (HOST_FLAG)
 //   Grok ignores what SessionStart and PostCompact hooks print, so session-start owes this folder’s menu of notes
-//       :263-265, :442 (menu), :501, test "session-start prints nothing; the first tool result carries the menu, once"
-//   the owed marker lives in _pending/                                         :66 (pendingPath), :266 (owe)
+//       :275-277, :454 (menu), :513, test "session-start prints nothing; the first tool result carries the menu, once"
+//   the owed marker lives in _pending/                                         :66 (pendingPath), :278 (owe)
 //   posttool delivers it once, as data, with the next tool result; a failed call counts; dropped after 2 h
-//       :506 (posttool), :270 (rename), :273 (age), :55, :460 ("DATA"),
+//       :518 (posttool), :282 (rename), :285 (age), :55, :472 ("DATA"),
 //       test "a failed first tool call delivers the menu too, under its own event name",
 //       test "tool calls running at once deliver the menu exactly once"
-//   UserPromptSubmit: Grok shows a hook's text only when it blocks             :527-530
-//   prompt: handed off, blocked until you type continue here                   :531 (prompt), :551
-//   prompt: a typed prompt drops a stale tool-ran marker                       :538, :67 (toolRanPath),
+//   UserPromptSubmit: Grok shows a hook's text only when it blocks             :539-542
+//   prompt: handed off, blocked until you type continue here                   :543 (prompt), :563
+//   prompt: a typed prompt drops a stale tool-ran marker                       :550, :67 (toolRanPath),
 //       test "prompt (Grok): a typed prompt drops a tool-ran marker left by an interrupted turn"
 //   pretool: deny; the reason opens with resume-here; stop-work tools and resume-here pass
-//       :578 (STOP_TOOLS), :584-586, :595
-//   stop saves the recap; a tool turn with none is sent back once              :302 (stop), :314-325, :331,
+//       :590 (STOP_TOOLS), :596-598, :607
+//   stop saves the recap; a tool turn with none is sent back once              :314 (stop), :326-337, :343,
 //       test "stop (Grok): a turn that ran a tool but has no HANDOFF recap is blocked, once"
 //   complete-check: at 100%, docs and memory steps; asks git whether the named docs changed
-//       :393 (completeCheck), :405-414, test "complete-check blocks a 100% recap with no docs or memory step, but only once"
-//   compacted keeps the summary; the next tool re-attaches the recap           :603 (compacted), :610, :613, :516
-//   statusline: bar, next step, HANDED OFF; caches the context size in _ctx/   :618 (statusline), :627, :631, :69
-//   three writes in a long chat: summary on the note, the owed _pending/ marker, the _ctx/ size   :613, :610, :627
+//       :405 (completeCheck), :417-426, test "complete-check blocks a 100% recap with no docs or memory step, but only once"
+//   compacted keeps the summary; the next tool re-attaches the recap           :615 (compacted), :622, :625, :528
+//   statusline: bar, next step, HANDED OFF; caches the context size in _ctx/   :630 (statusline), :639, :643, :69
+//   three writes in a long chat: summary on the note, the owed _pending/ marker, the _ctx/ size   :625, :622, :639
 //   install: a dry run; --write writes the script, the hooks file and the rules file under ~/.grok/, plus a .cmd
 //   wrapper on Windows, and backs up each file it changes; never config.toml
 //       install-grok.mjs:3-8, install-grok.mjs:30-34, install-grok.mjs:35-40, install-grok.mjs:44, install-grok.mjs:90,
 //       test "installer: writes its three files, never config.toml, is idempotent, and backs up a changed file"
-//   the model runs takeover, resume-here and notes; list prints the bars for you   :636, :645, :653-655, :660-661
+//   the model runs takeover, resume-here and notes; list prints the bars for you   :648, :657, :665-667, :672-673
 //   notes are plain JSON in ~/.grok/handoff/, kept 72 h, this machine only    :43-45, :48, :64 (notePath)
 //   no network, no telemetry, no dependencies; every mode exits 0; Claude Code hooks run through the compatibility
 //   layer do nothing
-//       :27-30 (node built-ins only), :38-41, :680-681, test "every mode exits 0 on empty or malformed input",
+//       :27-30 (node built-ins only), :38-41, :692-693, test "every mode exits 0 on empty or malformed input",
 //       test "Claude Code hooks that Grok runs through its compatibility layer do nothing"
 import { C, doc, header, footer, arrow, band } from './svg-kit.mjs';
 import { sequence } from './sequence.mjs';

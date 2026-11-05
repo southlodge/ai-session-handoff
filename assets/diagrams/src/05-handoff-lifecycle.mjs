@@ -4,24 +4,24 @@
 // Every behavioural sentence below is checkable in this kit (checked 2026-11-02; check-cites.mjs prints each cited
 // line beside its claim). A bare :N is always a line of handoff-guard.mjs; any other file is named. claim → source:
 //   each reply that does work ends with a HANDOFF recap; Stop saves it as the chat's note
-//       CLAUDE.snippet.md:3-4, AGENTS.snippet.md:3, GROK.snippet.md:3, :302 (stop), :314-325
-//   a note holds session_id, updated, summary and progress; newest first, one per chat   :314-325, :246, :64
-//   Claude Code and Codex: past 200k tokens, a nudge to start a new chat     :53 (NUDGE_TOKENS), :564-567, :527-530
-//   B's menu lists A's note, as data; on Grok, at its first tool result      :442 (menu), :460, :501, :515
-//   Codex only: a new chat records a start baseline from git                 :497, :352 (snapshotDirty)
-//   you say “carry on with …”; B runs takeover <A's session>                 :463 (rule b), :636 (takeover)
-//   the mark is takeover/<session>.json holding { by, at }, kept 7 days      :65, :641, :49, :252
+//       CLAUDE.snippet.md:3-4, AGENTS.snippet.md:3, GROK.snippet.md:3, :314 (stop), :326-337
+//   a note holds session_id, updated, summary and progress; newest first, one per chat   :326-337, :258, :64
+//   Claude Code and Codex: past 200k tokens, a nudge to start a new chat     :53 (NUDGE_TOKENS), :576-579, :539-542
+//   B's menu lists A's note, as data; on Grok, at its first tool result      :454 (menu), :472, :513, :527
+//   Codex only: a new chat records a start baseline from git                 :509, :364 (snapshotDirty)
+//   you say “carry on with …”; B runs takeover <A's session>                 :475 (rule b), :648 (takeover)
+//   the mark is takeover/<session>.json holding { by, at }, kept 7 days      :65, :653, :49, :264
 //   A is told to stop: its next prompt says so; tool calls are denied, except those that stop work; status line
-//   HANDED OFF where there is one        :551, :554-556 (prompt), :575-586 (pretool), :618 (statusline), :631
-//   the mark is read on every tool call; resume-here lifts it                :579-584, :645 (resumeHere), :288
-//   on Grok, resume-here marks the newer chat in turn                        :287-295 (handBack), :292
+//   HANDED OFF where there is one        :563, :566-568 (prompt), :587-598 (pretool), :630 (statusline), :643
+//   the mark is read on every tool call; resume-here lifts it                :591-596, :657 (resumeHere), :300
+//   on Grok, resume-here marks the newer chat in turn                        :299-307 (handBack), :304
 //   a 100% recap names the docs it changed, or says none were affected; git must agree, or it is sent back
-//       :393 (completeCheck), :405-414, :416-420 (Codex)
-//   list prints the bars; notes shows the menu                               :660-661 (list), :653-657 (notes)
+//       :405 (completeCheck), :417-426, :428-432 (Codex)
+//   list prints the bars; notes shows the menu                               :672-673 (list), :665-669 (notes)
 //   notes are plain JSON, kept 72 hours, this machine only                   :48, :64, :27-30
 //   no network, no telemetry, no dependencies; never edits your code; reads git only (status, diff, show);
 //   every mode exits 0
-//       :27-30, :343-345, :369 (changedFiles), :680-681, test "every mode exits 0 on empty or malformed input"
+//       :27-30, :355-357, :381 (changedFiles), :692-693, test "every mode exits 0 on empty or malformed input"
 import { C, doc, header, footer, band, getTheme } from './svg-kit.mjs';
 import { sequence } from './sequence.mjs';
 

@@ -129,6 +129,11 @@ const mutations = [
   ['non-ASCII paths left quoted', G, "['-c', 'core.quotePath=false', ...args]", 'args'],
   ['docs-step regex ignores a non-ASCII doc name', G, '(/[\\p{L}\\p{N}_./\\\\-]{1,256}\\.(?:md|mdx|txt)\\b/iu.test(t)', '(/[\\w./\\\\-]{1,256}\\.(?:md|mdx|txt)\\b/i.test(t)'],
   ['claim regex ignores a non-ASCII doc name', G, '.match(/[\\p{L}\\p{N}_./\\\\-]{1,256}\\.(?:md|mdx|txt)/giu)', '.match(/[\\w./\\\\-]{1,256}\\.(?:md|mdx|txt)/gi)'],
+  // 2026-11-04: the snippets end the recap with the Southlodge sign-off; the parser must never save it as data
+  ['sign-off mark kept in the parsed recap', G, "recapOf(text).split('\\n').map(unmark).join('\\n')", 'recapOf(text)'],
+  ['sign-off strip ignores the two-space gap', G, 's.endsWith(`  ${m}`)', 's.endsWith(m)'],
+  ['sign-off strip misses a CRLF line', G, 'const s = line.trimEnd();', 'const s = line;'],
+  ['sign-off strip misses the emoji form', G, '[SIGN_OFF, SIGN_OFF_EMOJI].find(', '[SIGN_OFF].find('],
 ];
 
 // --list: load this file and check that every `from` matches its file exactly once, without running the tests.

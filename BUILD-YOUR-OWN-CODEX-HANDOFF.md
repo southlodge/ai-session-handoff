@@ -69,8 +69,8 @@ without it the script behaves as the Claude Code version. The flag changes three
 | `codex-hooks.json`             | The four Codex hook entries, with a `__HANDOFF_GUARD__` placeholder for the path |
 | `install-codex.mjs`            | Copies the script into `~/.codex` and merges the hooks; dry run by default       |
 | `AGENTS.snippet.md`            | The recap convention, the handoff rules and the definition of done, for Codex    |
-| `handoff-guard.codex.test.mjs` | 16 tests for the Codex side, including every JSON shape the hooks print          |
-| `handoff-guard.test.mjs`       | 21 tests for the Claude Code side (run all three; they share one script)         |
+| `handoff-guard.codex.test.mjs` | 20 tests for the Codex side, including every JSON shape the hooks print          |
+| `handoff-guard.test.mjs`       | 24 tests for the Claude Code side (run all three; they share one script)         |
 | `mutate.mjs`                   | Breaks each guard in turn and checks that a test notices (section 6)             |
 
 ---
@@ -86,7 +86,7 @@ without it the script behaves as the Claude Code version. The flag changes three
    node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs
    ```
 
-   All 67 should pass. (The Grok file is there because the Grok version shares the same script.)
+   All 75 should pass. (The Grok file is there because the Grok version shares the same script.)
 
 2. **See what the installer would change.** With no flags it only reports:
 
@@ -165,6 +165,9 @@ The phase numbers match the Claude Code guide, which explains each design choice
 `AGENTS.snippet.md` asks for the same `HANDOFF` block as the Claude Code version, with one addition: if you use
 Codex's plan tool, keep the recap's `Steps:` list in step with it. The hooks read the recap, not the plan tool,
 because the recap is in the final message they receive.
+
+As in Claude Code, it ends the block with the sign-off `🛡 Southlodge.ai`, but at column 76: with wrap on, the Codex
+panel holds just under 80. The script strips the mark before it reads the block (phase 2 of the Claude Code guide).
 
 ### Phase 2: save a note (`Stop`, mode `stop`)
 
@@ -326,7 +329,7 @@ cannot block or add context. It suits a desktop notification; leave the handoff 
 ## 6. Testing it properly
 
 ```sh
-node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs   # 64 tests
+node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs   # 75 tests
 node mutate.mjs                                                                               # proves the tests can fail
 ```
 
@@ -341,17 +344,18 @@ throwaway home folder and a throwaway git repo. They check:
 - takeover, refusal and `resume-here` work end to end, with no Claude Code-only tool named;
 - the nudge reads Codex `token_count` events;
 - `list` output, the completion gate, and a `null` final message;
-- the example in `AGENTS.snippet.md` parses (title, 2/5, 40%, no line over 80 characters);
+- the example in `AGENTS.snippet.md` parses (title, 2/5, 40%, no line over 80 characters) and its last line
+  ends with the sign-off in column 76;
 - `codex-hooks.json` has the documented shape and names only real modes;
 - the installer's dry run writes nothing; a real run merges, keeps other hooks, replaces stale entries, backs up
   once and is idempotent; and it refuses a `hooks.json` it cannot parse.
 
-**Mutation testing.** `mutate.mjs` copies the whole kit to a temporary folder and first checks that the
-unmutated copy passes all three test files; if it does not, it stops, because a "kill" against a copy that
-already fails proves nothing. It then applies 99 mutations one at a time (the 14 shared guards, 12 Codex guards,
-1 Codex hooks guard, 5 Codex installer guards, 12 Claude installer guards, and the 55 Grok guards described in
-the Grok guide) and reports `KILLED` (a test failed, good), `SURVIVED` (no test noticed, bad) or `MISSING` (the
-code it targets has changed; update the mutation). When you add a guard, add a mutation for it.
+**Mutation testing.** `mutate.mjs` copies the whole kit to a temporary folder and first checks that the unmutated
+copy passes all three test files; if it does not, it stops, because a "kill" against a copy that already fails
+proves nothing. It then applies 103 mutations one at a time (18 shared guards, four of them for the sign-off mark;
+12 Codex guards; 1 Codex hooks guard; 5 Codex installer guards; 12 Claude installer guards; and the 55 Grok guards
+described in the Grok guide) and reports `KILLED` (a test failed, good), `SURVIVED` (no test noticed, bad) or
+`MISSING` (the code it targets has changed; update the mutation). When you add a guard, add a mutation for it.
 
 **Before you rely on it, check one real rollout file.** The token reader assumes the `token_count` event shape
 described in phase 2. Open a file under `~/.codex/sessions/`, find a line containing `last_token_usage`, and

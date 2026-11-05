@@ -7,29 +7,29 @@
 //   the hooks: SessionStart (startup, resume, clear, compact), UserPromptSubmit, PreToolUse, Stop; no PostCompact
 //       codex-hooks.json:6 (the matcher); its four event keys
 //   every hook runs with --host codex, and the takeover command the menu suggests carries it too
-//       codex-hooks.json:10, :47 (HOST_FLAG), :463
+//       codex-hooks.json:10, :47 (HOST_FLAG), :475
 //   session-start lists this folder’s notes newer than 72 h, one menu line each: bar, title, age
-//       :473 (sessionStart), :442 (menu), :458 (menu line), :234 (listNotes), :48 (NOTE_MAX_AGE_MS)
+//       :485 (sessionStart), :454 (menu), :470 (menu line), :246 (listNotes), :48 (NOTE_MAX_AGE_MS)
 //   CODEX_HOME moves the note store
 //       :43-45 (HOST_DIR, ROOT), test "CODEX_HOME moves the note store, as it moves the rest of Codex"
-//   a new chat records a start baseline: what git already shows changed       :497, :352-355 (snapshotDirty), :68
-//   prompt: handed off, say the work moved on, and stop                        :531 (prompt), :534, :554-559
+//   a new chat records a start baseline: what git already shows changed       :509, :364-367 (snapshotDirty), :68
+//   prompt: handed off, say the work moved on, and stop                        :543 (prompt), :546, :566-571
 //   prompt: past 200k tokens, a nudge, read from Codex token_count events
-//       :53 (NUDGE_TOKENS), :565-567, test "the big-chat nudge reads Codex token_count events"
-//   PreToolUse runs before shell, apply_patch and MCP calls on recent Codex    BUILD-YOUR-OWN-CODEX-HANDOFF.md:228-229
+//       :53 (NUDGE_TOKENS), :577-579, test "the big-chat nudge reads Codex token_count events"
+//   PreToolUse runs before shell, apply_patch and MCP calls on recent Codex    BUILD-YOUR-OWN-CODEX-HANDOFF.md:231-232
 //   pretool: handed off, deny naming the new chat; only resume-here passes (no Codex tool is a stop-work tool)
-//       :578 (STOP_TOOLS), :584-586, :597
+//       :590 (STOP_TOOLS), :596-598, :609
 //   each final reply that does work ends with a HANDOFF recap; recapOf reads the last one   AGENTS.snippet.md:3-4, :131
-//   Codex has no status line; stop saves the note without printing anything    :660, :302 (stop), :314-325
+//   Codex has no status line; stop saves the note without printing anything    :672, :314 (stop), :326-337
 //   complete-check on Codex: at 100%, a docs step only if files changed since the start baseline; never a memory step
-//       :416-420, test "complete-check blocks a 100% recap with changed files and no docs step, but only once"
-//   compaction arrives as SessionStart compact: session-start re-attaches this chat’s last recap   :490-494
+//       :428-432, test "complete-check blocks a 100% recap with changed files and no docs step, but only once"
+//   compaction arrives as SessionStart compact: session-start re-attaches this chat’s last recap   :502-506
 //   install: a dry run; --write copies the script and merges the hooks, backing up hooks.json; you paste the recap rule
 //       install-codex.mjs:3-4, install-codex.mjs:78 (paste AGENTS.snippet.md into AGENTS.md)
-//   the model runs takeover, resume-here and notes; list prints the bars for you   :636, :645, :653-655, :660-661
-//   notes are plain JSON in ~/.codex/handoff/, kept 72 h, this machine only   :43-45, :48, :243, :64 (notePath)
+//   the model runs takeover, resume-here and notes; list prints the bars for you   :648, :657, :665-667, :672-673
+//   notes are plain JSON in ~/.codex/handoff/, kept 72 h, this machine only   :43-45, :48, :255, :64 (notePath)
 //   no network, no telemetry, no dependencies; it never edits code; every mode exits 0
-//       :27-30 (node built-ins only), :680-681, test "every mode exits 0 on empty or malformed input"
+//       :27-30 (node built-ins only), :692-693, test "every mode exits 0 on empty or malformed input"
 import { C, doc, header, footer, arrow, band } from './svg-kit.mjs';
 import { sequence } from './sequence.mjs';
 

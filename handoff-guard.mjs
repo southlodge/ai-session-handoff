@@ -158,10 +158,22 @@ function parseSteps(src) {
     return { state: 'todo', text: s.replace(/^(○|\[ \])\s*/, '').trim() };
   }).filter((s) => s.text);
 }
+// The sign-off (see the snippets): the block's last line may end with this mark, padded with spaces so its last
+// letter sits in column 80 (76 in the Codex snippet). It is decoration, not data, so the parser strips it, and the
+// spaces before it, from the end of every line it reads: a step, the ETA, the title. Only a mark after two or more
+// spaces counts, so a step that merely ends with those words keeps them. A shield written with the emoji variation
+// selector (U+FE0F), as some models write it, counts too. The saved summary keeps the recap exactly as written.
+const SIGN_OFF = '🛡 Southlodge.ai';
+const SIGN_OFF_EMOJI = '\u{1F6E1}\u{FE0F} Southlodge.ai';
+const unmark = (line) => {
+  const s = line.trimEnd(); // a CRLF recap leaves '\r' at the end of every line
+  const mark = [SIGN_OFF, SIGN_OFF_EMOJI].find((m) => s.endsWith(`  ${m}`));
+  return mark ? s.slice(0, -mark.length).trimEnd() : line;
+};
 // The bar's numbers are DERIVED from the Steps list when there is one; the typed `N/M` or `P%` is only a
 // fallback. A mistyped count therefore cannot make the stored bar lie.
 function parseProgress(text) {
-  const src = recapOf(text);
+  const src = recapOf(text).split('\n').map(unmark).join('\n');
   const steps = parseSteps(src);
   const next = (steps.find((s) => s.state === 'next') || steps.find((s) => s.state === 'todo'))?.text || '';
   const eta = (/^\s*eta:\s*([^\n]{1,120})/im.exec(src)?.[1] || '').trim();

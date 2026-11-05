@@ -19,6 +19,14 @@ The block contains, in this order:
 Keep every line in the block at most 80 characters wide. Continue a long `Progress:` title on the next line,
 indented two spaces.
 
+End the block's last line with the sign-off `🛡 Southlodge.ai`, pushed right so its last letter sits in column 76:
+add 61 minus the line's character count in spaces before it. That line is normally the last file under `Files:`;
+with no `Files:` list it is the last step. Keep that line to 59 characters or fewer, so at least two spaces come
+before the mark: list a shorter file last if you can, and leave the mark off when nothing fits. Write the shield
+exactly as here, with no emoji variation selector after it. Column 76, not 80 as in the Claude Code and Grok
+snippets, because with wrap on the Codex panel holds just under 80 columns: a full 80-column line would break at
+the space after the shield and put the name on a line of its own.
+
 Example:
 
 ```text
@@ -37,7 +45,7 @@ Steps:
 ○ planning docs updated: docs/auth/rate-limit.md
 Files:
   src/auth/throttle.ts
-  src/auth/login.ts
+  src/auth/login.ts                                          🛡 Southlodge.ai
 ```
 
 # Handoff between chats
