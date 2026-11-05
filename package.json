@@ -31,6 +31,7 @@
   "scripts": {
     "test": "node --test handoff-guard.test.mjs handoff-guard.codex.test.mjs handoff-guard.grok.test.mjs",
     "mutate": "node mutate.mjs",
+    "fence": "node --test .github/fence/no-saved-pages.test.mjs && node .github/fence/mutate.mjs",
     "install:claude": "node install-claude.mjs",
     "install:codex": "node install-codex.mjs",
     "install:grok": "node install-grok.mjs"

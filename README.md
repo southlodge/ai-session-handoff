@@ -207,6 +207,7 @@ documented hook events and JSON shapes; if a tool changes those, the tests here 
 | `mutate.mjs`                    | all three   | Breaks each guard in turn and checks that a test notices                                    |
 | `package.json`                  | all three   | `npm test` and `npm run mutate`; no dependencies                                            |
 | `.github/workflows/test.yml`    | all three   | Runs the tests on Ubuntu and Windows for Node 20, 22 and 24, and the mutation run on Ubuntu; rebuilds and checks the diagrams |
+| `.github/workflows/fence.yml` and `.github/fence/` | all three | Refuses any web page, office document or link to a hosted Claude page, in every commit of a pull request and in the history of `main`; `npm run fence` runs its tests and mutations |
 | `.github/ISSUE_TEMPLATE/`       | all three   | Bug report and feature request forms; security reports go through `SECURITY.md`             |
 | `.github/PULL_REQUEST_TEMPLATE.md` | all three | The checklist a change has to pass: tests, mutation run, diagram rebuild, built-ins only, dry-run installers |
 | `.github/dependabot.yml`        | all three   | Keeps the pinned GitHub Actions current (the kit itself has no dependencies to update)      |

@@ -1,0 +1,38 @@
+name: fence
+
+# Keeps saved web pages, office documents and links to hosted Claude pages out of this repo.
+#
+# pull_request_target runs this file and the check as they are on main, so a pull request cannot switch the
+# check off by editing it. The pull request's files are only read as git data; none of them is checked out or
+# run, and nothing from the pull request is pasted into a command. The token is read-only and no secret is used.
+on:
+  pull_request_target:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  no-saved-pages:
+    name: no saved pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: every commit in the pull request
+        if: github.event_name == 'pull_request_target'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git fetch --no-tags origin "+refs/pull/${PR_NUMBER}/head:refs/fence/head"
+          node .github/fence/no-saved-pages.mjs --range "${BASE_SHA}..${HEAD_SHA}"
+      - name: the whole history of main
+        if: github.event_name == 'push'
+        run: node .github/fence/no-saved-pages.mjs --history "$GITHUB_SHA"

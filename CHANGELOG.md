@@ -18,6 +18,10 @@ First public release, to be tagged `v0.1.0` when the repository goes public.
 - A guide per tool: `BUILD-YOUR-OWN-CHAT-HANDOFF.md` (Claude Code, the full design), `BUILD-YOUR-OWN-CODEX-HANDOFF.md`
   and `BUILD-YOUR-OWN-GROK-HANDOFF.md`.
 - 75 tests and a 103-mutation check (`npm test`, `npm run mutate`).
+- A check, `no saved pages`, that refuses any web page, office document or link to a hosted Claude page in every
+  commit of a pull request and in the history of `main`. Its one exception, a helper the diagram build opens, is
+  pinned by content. It runs from `main`'s copy, so a pull request cannot switch it off by editing it. Its own
+  tests and mutations run with `npm run fence`.
 - The Southlodge sign-off: each snippet ends the recap block with `🛡 Southlodge.ai`, pushed right to column 80
   (76 in the Codex snippet, because the Codex panel holds just under 80 columns when wrap is on). The script
   strips the mark, and the spaces before it, before it reads the block, so the mark is never saved as part of a
