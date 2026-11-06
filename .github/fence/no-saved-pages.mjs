@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 const REFUSED_TYPE = /\.(?:html?|xhtml|shtml|mhtml?|mht|pdf|docx?|pptx?|xlsx?|odt|odp|ods|rtf)$/i;
 
 // A page saved under another name still starts like a page.
-const PAGE_START = /^[\s﻿]*<(?:!doctype\s+html|html[\s>])/i;
+const PAGE_START = /^[\s\ufeff]*<(?:!doctype\s+html|html[\s>])/i;
 
 const HOSTS = String.raw`claude\.(?:ai|site)|claudeusercontent\.com`;
 const HOSTED_LINK = new RegExp(

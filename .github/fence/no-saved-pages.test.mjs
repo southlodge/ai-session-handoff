@@ -72,7 +72,7 @@ for (const name of ['page.html', 'deep/er/page.htm', 'PAGE.HTML', 'saved.mhtml',
 for (const [label, body] of [
   ['a doctype', '<!doctype html>\n<title>x</title>\n'],
   ['an html tag', '\n  <HTML lang="en"><body>x</body></html>\n'],
-  ['a byte-order mark', '﻿<!DOCTYPE html>\n'],
+  ['a byte-order mark', '\ufeff<!DOCTYPE html>\n'],
 ]) {
   test(`refuses a page renamed to .txt that starts with ${label}`, () => {
     const { code, out } = pullRequest({ 'notes.txt': body });
