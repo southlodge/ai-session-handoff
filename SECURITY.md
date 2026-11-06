@@ -4,7 +4,7 @@
 
 Please do not open a public issue for a security problem. Use GitHub's private report form:
 <https://github.com/southlodge/ai-session-handoff/security/advisories/new>. If that form is not available to
-you, send a private message to the author on [LinkedIn](https://www.linkedin.com/in/jamie-underwood-principal-consultant/)
+you, use the form at <https://southlodge.ai/contact>, choose Security & Compliance,
 and say it concerns this repository.
 
 You will get an acknowledgement within five working days. Fixes ship as a new release with a note in the
