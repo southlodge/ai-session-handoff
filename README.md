@@ -239,4 +239,4 @@ owners; this kit is not affiliated with or endorsed by Anthropic, OpenAI or xAI.
 
 ## Contact
 
-Built at [Southlodge.ai](https://southlodge.ai); start at [southlodge.ai/welcome](https://southlodge.ai/welcome). To connect with the author: [LinkedIn](https://www.linkedin.com/in/jamie-underwood-principal-consultant/).
+Built at [Southlodge.ai](https://southlodge.ai); start at [southlodge.ai/welcome](https://southlodge.ai/welcome). To reach the author: [southlodge.ai/contact](https://southlodge.ai/contact).
