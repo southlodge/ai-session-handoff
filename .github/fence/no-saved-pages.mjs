@@ -13,7 +13,12 @@
 // request. It names the file and the reason but never repeats the matched text, so a refused link does not end
 // up in a public log.
 //
-// What it cannot see: words copied by hand from a page into an ordinary file, and text inside a binary file.
+// What it cannot see: words copied by hand from a page into an ordinary file, text inside a binary file, and
+// anything outside a commit, such as a pull request description, an issue or a release note.
+//
+// What it cannot do: it looks at a branch only once that branch becomes a pull request, so a page pushed to a branch
+// and left there is not refused. Run --history on every branch before this repo changes from private to public. It
+// catches slips, and is no defence against someone with write access who sets out to get round it.
 import { execFileSync } from 'node:child_process';
 import { realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

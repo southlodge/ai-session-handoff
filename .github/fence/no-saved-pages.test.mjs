@@ -99,6 +99,8 @@ for (const [label, text] of [
   ['with no scheme', `See ${host}/code/artifact/abc.\n`],
   ['on a subdomain', `See https://www.${host}/share/abc.\n`],
   ['with no path', `See https://${host}.\n`],
+  ['on a subdomain with no path', `See https://www.${host}.\n`],
+  ['on a subdomain with no scheme', `See www.${host}/share/abc.\n`],
   ['on the older page host', `See https://abc.${['claude', 'site'].join('.')}/x.\n`],
   ['on the content host', `See https://www.${['claudeusercontent', 'com'].join('.')}/x.\n`],
 ]) {

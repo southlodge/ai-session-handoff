@@ -24,6 +24,7 @@ const mutations = [
   ['links with no scheme missed', "|(?<![a-z0-9.-])(?:[a-z0-9-]+\\.)*(?:${HOSTS})\\/`", '`'],
   ['links with a scheme missed', 'String.raw`\\/\\/(?:[a-z0-9-]+\\.)*(?:${HOSTS})(?![a-z0-9-]|\\.[a-z0-9])` +\n    String.raw`|', 'String.raw`'],
   ['subdomains missed', 'String.raw`\\/\\/(?:[a-z0-9-]+\\.)*(?:${HOSTS})', 'String.raw`\\/\\/(?:${HOSTS})'],
+  ['subdomains with no scheme missed', '|(?<![a-z0-9.-])(?:[a-z0-9-]+\\.)*(?:${HOSTS})', '|(?<![a-z0-9.-])(?:${HOSTS})'],
   ['longer host names refused', '(?![a-z0-9-]|\\.[a-z0-9])', ''],
   ['longer names refused too', '(?<![a-z0-9.-])', ''],
   ['older page host missed', 'claude\\.(?:ai|site)|', 'claude\\.ai|'],

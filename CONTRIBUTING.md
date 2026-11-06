@@ -16,7 +16,9 @@ Thank you. Three rules keep the kit what it is:
    If you add a guard, add a line to `mutate.mjs` that breaks it, and a test that notices.
 
    If you change `.github/fence/`, run `npm run fence` as well. That check refuses web pages, office documents and
-   links to hosted Claude pages, because this repo holds code and guides and its whole history is public.
+   links to hosted Claude pages, because this repo holds code and guides and its whole history is public. It catches
+   slips only: it cannot see words copied by hand, and it looks at a branch only once that branch becomes a pull
+   request. So please keep pages off every branch, not just `main`.
 
 The diagrams in `assets/diagrams/` are generated. To change one, edit its source in `assets/diagrams/src/`, run
 `node assets/diagrams/src/build.mjs` and `node assets/diagrams/src/build.mjs --theme dark`, and commit the SVGs
