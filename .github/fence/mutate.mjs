@@ -18,7 +18,7 @@ const mutations = [
   ['pdf and office files allowed', '|pdf|docx?|pptx?|xlsx?|odt|odp|ods|rtf', ''],
   ['renamed pages not checked', "if (PAGE_START.test(text.slice(0, 512))) return 'it is a web page under another name';", ''],
   ['page start case matters', 'html[\\s>])/i;', 'html[\\s>])/;'],
-  ['byte-order mark hides a page', '/^[\\s\\ufeff]*<', '/^\\s*<'],
+  ['a byte-order mark or spaces hide a page', '/^\\s*<', '/^<'],
   ['links not checked', "if (HOSTED_LINK.test(text)) return 'it has a link to a hosted Claude page';", ''],
   ['link case matters', "\n  'i',\n);", "\n  '',\n);"],
   ['links with no scheme missed', "|(?<![a-z0-9.-])(?:[a-z0-9-]+\\.)*(?:${HOSTS})\\/`", '`'],
