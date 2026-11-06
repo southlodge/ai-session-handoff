@@ -28,6 +28,16 @@ jobs:
       - run: npm run mutate
         if: matrix.os == 'ubuntu-latest' && matrix.node == 22
 
+  fence:
+    name: fence (tests and mutations)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: npm run fence
+
   diagrams:
     name: diagrams (rebuild byte for byte, checks proven)
     runs-on: ubuntu-latest
