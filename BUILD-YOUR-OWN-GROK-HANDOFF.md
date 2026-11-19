@@ -96,7 +96,7 @@ Every Grok hook command ends with `--host grok`. The flag changes four things:
 
 ## 3. Quick start
 
-**You need:** Grok Build, Node.js 18 or later, and git.
+**You need:** Grok Build, Node.js 20 or later, and git.
 
 1. **Run the tests** from the kit folder. They use a throwaway home folder and never touch your real
    `~/.grok`:
