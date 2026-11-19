@@ -77,7 +77,7 @@ without it the script behaves as the Claude Code version. The flag changes three
 
 ## 3. Quick start
 
-**You need:** a recent Codex CLI (hooks are on by default in current versions), Node.js 18 or later, and git.
+**You need:** a recent Codex CLI (hooks are on by default in current versions), Node.js 20 or later, and git.
 
 1. **Run the tests** from the kit folder. They use a throwaway home folder and never touch your real
    `~/.codex`:

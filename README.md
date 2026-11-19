@@ -9,6 +9,9 @@
 
 **Carry AI coding work into the next session.** For Claude Code, OpenAI Codex CLI and xAI Grok Build.
 
+Project page, with a five-step walk-through of one hand-off:
+[southlodge.ai/open-source/ai-session-handoff](https://southlodge.ai/open-source/ai-session-handoff).
+
 Long chats get summarised, hit their limit, or are simply closed, and the next session starts cold: it does not
 know what was done, what was decided, or what comes next. Built-in resume brings back a transcript; it does not
 leave a structured note the next chat can act on, and it does not stop the old chat from carrying on. This kit
@@ -184,7 +187,8 @@ As of 1 November 2026:
 | xAI Grok Build   | 1.0.70  |
 
 Both commands above pass on Windows 11 (Node 24) and Ubuntu 26.04 (Node 22), and in CI on Ubuntu and Windows for
-Node 20, 22 and 24. Each guide records its own live two-session test. The kit relies only on each tool's
+Node 20, 22 and 24. The Grok Build guide records a live run in two real chats on Windows 11 (2026-10-30); the
+Claude Code and Codex CLI guides do not yet record a dated two-session run. The kit relies only on each tool's
 documented hook events and JSON shapes; if a tool changes those, the tests here are the first thing to run.
 
 ## Files

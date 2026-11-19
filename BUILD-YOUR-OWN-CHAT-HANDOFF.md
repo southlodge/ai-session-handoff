@@ -118,7 +118,7 @@ lines), so you can add the ones you want.
 ## 4. Quick start
 
 **You need:** Claude Code (a recent version; see [section 11](#11-troubleshooting) if hooks behave differently
-on yours), Node.js 18 or later, and git.
+on yours), Node.js 20 or later, and git.
 
 1. **Run the tests** from the kit folder:
 

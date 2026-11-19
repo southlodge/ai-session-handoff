@@ -6,7 +6,9 @@ All notable changes to this project are recorded here. The format follows
 
 ## [Unreleased]
 
-First public release, to be tagged `v0.1.0` when the repository goes public.
+## [0.1.0] - 2026-11-19
+
+First public release. The repository went public on 6 November 2026.
 
 ### Added
 
@@ -40,3 +42,6 @@ First public release, to be tagged `v0.1.0` when the repository goes public.
   was claimed by renaming it, and two overlapping renames of the same file can both succeed on Windows. It is
   now claimed by creating a `.claim` lock with an exclusive create; a lock left by a call that died clears
   after 30 seconds.
+
+[Unreleased]: https://github.com/southlodge/ai-session-handoff/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/southlodge/ai-session-handoff/releases/tag/v0.1.0
